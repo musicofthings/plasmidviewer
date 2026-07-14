@@ -1,0 +1,19 @@
+LOCUS       TestPlasmid             120 bp    DNA     circular SYN 01-FEB-2026
+DEFINITION  Synthetic plasmid for testing.
+ACCESSION   TestPlasmid
+VERSION     TestPlasmid
+KEYWORDS    .
+SOURCE      synthetic
+  ORGANISM  synthetic DNA
+FEATURES             Location/Qualifiers
+     CDS             1..30
+                     /label="TestGene1"
+                     /note="A test gene"
+     promoter        40..50
+                     /label="Prom1"
+     terminator      80..90
+                     /label="Term1"
+ORIGIN
+        1 atgcgtgcgt tagcgcgtta gcghgcgcgc gcgcgcgtag ctagctagct agctagatgc
+       61 gtgcgttagc gcgttagcgt gcgcgcgcgc gcgcgtagct agctagctag ctagatgcgt
+//

@@ -1,0 +1,39 @@
+LOCUS       DensePlasmid             600 bp    DNA     circular SYN 13-JUL-2026
+DEFINITION  Dense synthetic plasmid: overlapping features for label-lane testing.
+ACCESSION   DensePlasmid
+KEYWORDS    .
+SOURCE      synthetic
+  ORGANISM  synthetic DNA
+FEATURES             Location/Qualifiers
+     CDS             1..180
+                     /label="AmpR_resistance_gene"
+     promoter        20..60
+                     /label="lac_promoter"
+     CDS             150..320
+                     /label="GFP_reporter_fusion"
+     terminator      170..200
+                     /label="T7_term"
+     promoter        300..340
+                     /label="CMV_enhancer_promoter"
+     CDS             310..520
+                     /label="NeoR_KanR_marker"
+     misc_feature    330..350
+                     /label="MCS"
+     terminator      500..560
+                     /label="SV40_polyA_terminator"
+     promoter        505..530
+                     /label="U6"
+     CDS             540..600
+                     /label="ori"
+ORIGIN
+        1 gtcaaagata accatacaat acatatgcta gtatgaaatc cgccggttta gcgcgaactg
+       61 tccaagggcc aagcaagcgc gacgtacatg ttcccatccg tcgcgcttat tttactggat
+      121 cggtaccccc accatatcta gaaatagaat ctgggcaacc ccgataggct atgtagaggt
+      181 gtgtttcttc gaagcgtgcg gatatctgtc acgaactctc gacccattta tctcgttaaa
+      241 tcttagtgtg gctagcctta ctatttcaag caattgaaca acgtgcctgt ctcaccgatc
+      301 atgatgtgtc tacctttccg ctggagagcc acggaataag gatgtcgctc gagatcagaa
+      361 gatagacagc gtatatgatt ggtgctggag aaatctcacc cgttgttcga taagctaacg
+      421 tgacttgcag gggtagtgta gcacgttaag atcacaggta tcgctgtact ataaatgacc
+      481 aatcgacaaa cgagtttccc acgatatggg tacacgatcg gcccatgaca gcacgcttaa
+      541 tggtgagtcc catacccgtc gcgagaggca tagggaccag cgagaagttg cgtgcactaa
+//
