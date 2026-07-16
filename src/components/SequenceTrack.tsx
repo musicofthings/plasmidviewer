@@ -28,11 +28,63 @@ export function SequenceTrack({
     plasmid, offsetBp, viewportStart, viewportEnd, pxPerBp, bpToPx, y,
     showComplement, showTranslation,
 }: SequenceTrackProps) {
+    // Which rows this track occupies, top to bottom, matching sequenceRowCount().
+    const rowDefs: { label: string; isFrame: boolean }[] = [{ label: "5′→3′", isFrame: false }];
+    if (showComplement) rowDefs.push({ label: "3′→5′", isFrame: false });
+    if (showTranslation) rowDefs.push(
+        { label: "frame +1", isFrame: true },
+        { label: "frame +2", isFrame: true },
+        { label: "frame +3", isFrame: true },
+    );
+
+    // Too zoomed out to draw even 1.5px bars: instead of a blank strip, mark each enabled row
+    // with a dashed line + label so the reader can see the strand/frames exist, and a tooltip
+    // that says how to reveal them.
     if (pxPerBp < MIN_PX_FOR_BARS) {
+        const firstRef = Math.max(viewportStart, 1 + offsetBp);
+        const lastRef = Math.min(viewportEnd, plasmid.length + offsetBp);
+        if (lastRef < firstRef) return null;
+
+        const labelX = bpToPx(firstRef);
+        const lineStart = labelX + 56;
+        const lineEnd = bpToPx(lastRef + 1);
+
         return (
-            <text x={0} y={y + 11} fontSize="11" fill="var(--joy-palette-text-tertiary)">
-                Zoom in to read bases
-            </text>
+            <>
+                {rowDefs.map((def, i) => {
+                    const rowY = y + i * SEQ_ROW_HEIGHT;
+                    const midY = rowY + SEQ_ROW_HEIGHT / 2;
+                    const tip = def.isFrame ? "Zoom in to read the translation" : "Zoom in to read bases";
+                    return (
+                        <g key={def.label}>
+                            <title>{tip}</title>
+                            <text
+                                x={labelX}
+                                y={midY}
+                                dy=".32em"
+                                fontSize="9"
+                                fill="var(--joy-palette-text-tertiary)"
+                                style={{ pointerEvents: 'none', userSelect: 'none' }}
+                            >
+                                {def.label}
+                            </text>
+                            {lineEnd > lineStart && (
+                                <line
+                                    x1={lineStart}
+                                    y1={midY}
+                                    x2={lineEnd}
+                                    y2={midY}
+                                    stroke="var(--joy-palette-neutral-400)"
+                                    strokeWidth={2}
+                                    strokeDasharray="2 4"
+                                    strokeLinecap="round"
+                                    opacity={0.7}
+                                />
+                            )}
+                        </g>
+                    );
+                })}
+            </>
         );
     }
 

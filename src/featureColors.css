@@ -1,0 +1,30 @@
+/*
+ * Feature-type color palette. CDS is anchored on the plasmidsaurus brand green; the rest are
+ * spread across distinct hues so every feature type reads apart at a glance. Defined as custom
+ * properties (Joy's palette only offers five hues) with explicit light and dark values — the
+ * app forces `data-joy-color-scheme`, and the SVG export bakes any `var(--…)` against the live
+ * document, so these carry through to on-screen render and to exported files alike.
+ *
+ * Values are chosen dark enough that the white feature labels stay legible on the fill.
+ */
+:root {
+  --feat-cds: #4f9e0a;
+  --feat-promoter: #2563eb;
+  --feat-terminator: #dc2626;
+  --feat-marker: #b45309;
+  --feat-origin: #7c3aed;
+  --feat-primer: #0f766e;
+  --feat-ltr: #c026d3;
+  --feat-misc: #64748b;
+}
+
+[data-joy-color-scheme="dark"] {
+  --feat-cds: #7bc22a;
+  --feat-promoter: #60a5fa;
+  --feat-terminator: #f87171;
+  --feat-marker: #f59e0b;
+  --feat-origin: #a78bfa;
+  --feat-primer: #2dd4bf;
+  --feat-ltr: #e879f9;
+  --feat-misc: #94a3b8;
+}

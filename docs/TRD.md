@@ -54,10 +54,12 @@ type Strand = "+" | "-";
 interface Feature {
   id: string;
   name: string;
-  type: "CDS" | "promoter" | "terminator" | "marker" | "misc";
+  type: "CDS" | "promoter" | "terminator" | "marker" | "misc";  // five color buckets
   start: number; // 1-based inclusive  ← MUST be enforced by every parser
   end: number;   // 1-based inclusive
   strand: Strand;
+  rawType?: string;      // verbatim source type (rep_origin, LTR, …), for display (FR-27)
+  description?: string;  // /note, /product, /function or /gene, shown on hover (FR-27)
 }
 type Topology = "circular" | "linear";  // from the source file; FASTA defaults to linear (FR-5)
 interface Plasmid { name: string; length: number; sequence: string; features: Feature[]; topology: Topology; }
@@ -82,8 +84,12 @@ convention at the boundary; no other convention may leak past `parsers/`.
 | `components/SequenceViewer.tsx` | Scrollable base-level strip, base coloring | live |
 | `components/CircularBackbone.tsx` | Circular arcs + along-arc labels | live (ref track only) |
 | `components/Ruler.tsx` | bp axis with 1/2/5×10ⁿ ticks; drag surface for panning | live |
-| `components/DetailPanel.tsx` | Feature *or* mismatch detail + "Zoom to"; feature *Copy sequence* (FR-15) | live |
+| `components/DetailPanel.tsx` | Feature *or* mismatch detail + description + "Zoom to"; feature *Copy sequence* (FR-15) | live |
 | `components/TrackPanel.tsx` | Rename / show-hide / reorder / remove tracks (FR-19) | live |
+| `components/FeatureTooltip.tsx` | Fixed-position live hover tooltip for both views (FR-27) | live |
+| `components/FeatureLegend.tsx` | Legend of the feature types present (FR-28) | live |
+| `utils/featureStyle.ts` | Shared color/category logic: `featureCategory`/`featureColor`/legend metadata | live |
+| `featureColors.css` | `--feat-*` palette (light + dark), imported by `main.tsx` (FR-28) | live |
 | `utils/layout.ts` | Tick steps; greedy lane packing + label placement | live |
 | `utils/sequence.ts` | complement/translation/GC + non-standard-base detection (FR-3) | live |
 | `parsers/fasta.ts` | FASTA → Plasmid (no features) | live |
@@ -231,10 +237,42 @@ Ordered roughly by severity. Items 1–4 were the Milestone 1 (P0) set and are *
     logs an invalid-hook-call, then it clears. A fresh `npm run dev` never hits it. `vite.config
     .ts` now pins the Joy subpaths in `optimizeDeps.include` so even a mid-session import is
     pre-bundled and silent. Not a runtime bug — production build and a cold dev start are clean.
+15. **Feature annotations + hover tooltips (FR-27).** `parsers/teselagen.ts` now keeps the
+    verbatim `type` as `rawType` and lifts a `description` from the `notes` object
+    (`/note` → `/product` → `/function` → `/gene`, joined). `FeatureTooltip` is one
+    fixed-position element (viewport/client coords, `pointerEvents: none`) shared by both
+    SVGs; `FeatureGlyph` and the circular arc feed it `onMouseEnter/Move` (cursor-following)
+    and clear on leave, and starting a pan drag clears it. Color moved to `utils/featureStyle
+    .ts` so glyph and arc cannot diverge. **Palette caveat:** the brand theme's `primary` and
+    `success` are both green, so CDS vs promoter/origin are hard to tell apart by color alone —
+    the tooltip's explicit `rawType` does the real disambiguation. A genuinely distinct
+    per-type palette needs colors defined for *both* schemes (see the dark-mode trap in item
+    10), so it was deferred rather than hacked in with raw hex.
+16. **Theme-safe feature palette + legend (FR-28) — the earlier palette caveat is resolved.**
+    Eight `--feat-*` custom properties in `featureColors.css`, each with a `:root` (light) and a
+    `[data-joy-color-scheme="dark"]` value — the attribute Joy stamps on `<html>`. `featureColor`
+    returns `var(--feat-…)`, so the theme toggle and the export both resolve them (the export's
+    var-baker is generic over `var(--*)`, not Joy-only, and custom properties inherit, so
+    `getComputedStyle(svg)` reads them). **Gotcha found in testing:** `src/index.css` is *never
+    imported* (main.tsx pulls only fonts + App), and importing it would drag in the leftover Vite
+    template body/button styles — so the palette lives in its own `featureColors.css` imported by
+    `main.tsx`, not in `index.css`. **Second find:** Teselagen routes `primer_bind` into a
+    separate `parsed.primers` array; `plasmidFromTeselagen` now concatenates it into `features`,
+    so primers are shown (and colored) instead of silently dropped.
+17. **Map-level navigation + collapsed-row hints (FR-29).** Zoom/pan controls moved from the
+    page toolbar to a floating cluster over the map (top-right readout + `− + fit`), plus
+    edge scroll chevrons shown only when `viewport.start > 1` / `viewport.end < length`. Mouse
+    wheel pans, ⌘/Ctrl+wheel zooms. **The wheel handler is a native `addEventListener('wheel',
+    …, { passive: false })`, not React's `onWheel`** — React attaches wheel passively, so its
+    `preventDefault` is ignored and a plain wheel would scroll the page instead of the map; the
+    listener also *skips* preventDefault at the edge in the scroll direction so the page can
+    still scroll past the map. In `SequenceTrack`, the `pxPerBp < MIN_PX_FOR_BARS` branch no
+    longer returns a single "zoom in" string; it draws a labeled dashed line per enabled row
+    (5′→3′, 3′→5′, frames +1/+2/+3) with a per-row `<title>` tooltip.
 
 ## 8. Testing strategy
 
-**Vitest** (`npm test`), 78 tests in five files. Fixtures live in `src/__fixtures__/` and are
+**Vitest** (`npm test`), 86 tests in six files. Fixtures live in `src/__fixtures__/` and are
 loaded with Vite's `?raw` import, so tests need no Node `fs` access and typecheck under the
 app tsconfig. **CI** (`.github/workflows/ci.yml`) runs `lint` → `test` → `build` on every push
 to `main` and every PR. `parsers.test.ts` also asserts topology (FR-5): `test.gb`'s LOCUS line

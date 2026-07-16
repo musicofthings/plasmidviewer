@@ -1,4 +1,5 @@
 import type { Feature, Topology } from "../models/plasmid";
+import { featureColor } from "../utils/featureStyle";
 
 interface CircularTrack {
     id: string;
@@ -20,13 +21,16 @@ interface CircularBackboneProps {
     gcContent?: number;
     selectedFeatureId?: string;
     onFeatureClick: (feature: Feature, track: CircularTrack) => void;
+    onFeatureHover?: (feature: Feature, track: CircularTrack, clientX: number, clientY: number) => void;
+    onFeatureHoverEnd?: () => void;
 }
 
 const RING_SPACING = 34;
 const FEATURE_STROKE = 9;
 
 export function CircularBackbone({
-    radius, cx, cy, tracks, totalLength, topology, gcContent, selectedFeatureId, onFeatureClick,
+    radius, cx, cy, tracks, totalLength, topology, gcContent, selectedFeatureId,
+    onFeatureClick, onFeatureHover, onFeatureHoverEnd,
 }: CircularBackboneProps) {
     const pointAt = (bp: number, r: number) => {
         const angle = (bp / totalLength) * 2 * Math.PI - Math.PI / 2; // 0 bp at 12 o'clock
@@ -69,17 +73,18 @@ export function CircularBackbone({
                                 <g
                                     key={f.id}
                                     onClick={() => onFeatureClick(f, track)}
+                                    onMouseEnter={(e) => onFeatureHover?.(f, track, e.clientX, e.clientY)}
+                                    onMouseMove={(e) => onFeatureHover?.(f, track, e.clientX, e.clientY)}
+                                    onMouseLeave={() => onFeatureHoverEnd?.()}
                                     style={{ cursor: 'pointer' }}
                                 >
                                     <path
                                         id={`arc-${f.id}`}
                                         d={arc(f.start, f.end, r)}
-                                        stroke={getFeatureColor(f.type)}
+                                        stroke={featureColor(f)}
                                         strokeWidth={selected ? FEATURE_STROKE + 4 : FEATURE_STROKE}
                                         fill="none"
-                                    >
-                                        <title>{`${f.name} (${f.type}) ${f.start}..${f.end} ${f.strand}`}</title>
-                                    </path>
+                                    />
                                     {spanBp > totalLength / 40 && (
                                         <text
                                             dy={-8}
@@ -164,14 +169,4 @@ export function CircularBackbone({
             )}
         </g>
     );
-}
-
-function getFeatureColor(type: Feature["type"]): string {
-    switch (type) {
-        case "CDS": return "var(--joy-palette-success-500)";
-        case "promoter": return "var(--joy-palette-primary-500)";
-        case "terminator": return "var(--joy-palette-danger-500)";
-        case "marker": return "var(--joy-palette-warning-500)";
-        default: return "var(--joy-palette-neutral-500)";
-    }
 }

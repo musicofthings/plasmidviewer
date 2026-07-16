@@ -6,6 +6,7 @@ import Chip from "@mui/joy/Chip";
 import Typography from "@mui/joy/Typography";
 import type { Feature } from "../models/plasmid";
 import type { Mismatch } from "../utils/alignment";
+import { featureTypeLabel } from "../utils/featureStyle";
 
 export type Selection =
     | { kind: "feature"; feature: Feature; trackName: string; sequence: string }
@@ -43,16 +44,18 @@ export function DetailPanel({ selection, onZoomTo, onClear }: DetailPanelProps) 
 
     const rows: [string, string][] = [];
     let title: string;
+    let description: string | undefined;
     let zoomStart: number;
     let zoomEnd: number;
 
     if (selection.kind === "feature") {
         const f = selection.feature;
         title = f.name;
+        description = f.description;
         zoomStart = f.start;
         zoomEnd = f.end;
         rows.push(
-            ["Type", f.type],
+            ["Type", featureTypeLabel(f)],
             ["Strand", f.strand === "+" ? "+ (forward)" : "− (reverse)"],
             ["Start", `${f.start}`],
             ["End", `${f.end}`],
@@ -98,6 +101,12 @@ export function DetailPanel({ selection, onZoomTo, onClear }: DetailPanelProps) 
                     </Button>
                 </Box>
             </Box>
+
+            {description && (
+                <Typography level="body-sm" sx={{ mb: 1, color: 'text.secondary' }}>
+                    {description}
+                </Typography>
+            )}
 
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
                 {rows.map(([label, value]) => (

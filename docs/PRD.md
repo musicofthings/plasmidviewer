@@ -131,10 +131,31 @@ clinical reporting.
   that copies exactly that feature's bases. Drag-to-select an arbitrary range is still open.
 - **Touch drag (FR-25):** pan and track-align drags now use pointer events, so touch and pen
   work, not just the mouse.
+- **Rich annotations + live tooltips (FR-27):** the parser now keeps each feature's verbatim
+  type (`rep_origin`, `LTR`, `primer_bind`, …) and its `/note`//`/product`//`/gene` description
+  instead of discarding them, and **folds in `primer_bind` annotations** that Teselagen splits
+  into a separate array (previously dropped). Hovering any feature — linear glyph or circular
+  arc — shows a cursor-following tooltip with the name, type, `start..end · N bp`, strand,
+  description, and track; the same description also appears in the detail panel.
+- **Map-level navigation + collapsed-row hints (FR-29):** zoom/pan moved off the page toolbar
+  onto the map itself — a floating zoom cluster (`− + fit`) and position readout top-right, and
+  left/right scroll chevrons that appear only when there is more sequence that way. Mouse wheel
+  now pans the map, ⌘/Ctrl+wheel zooms around the cursor, and drag still pans (all pointer/wheel
+  driven). When too zoomed out to draw bases, each enabled sequence row (5′→3′, 3′→5′, the three
+  frames) shows a labeled dashed line with a "zoom in to read…" tooltip, so the strands/frames
+  are discoverable instead of appearing only at single-base zoom.
+- **Theme-safe feature palette + legend (FR-28):** eight distinct, colorblind-friendlier hues
+  (CDS anchored on the plasmidsaurus green, then blue/red/amber/violet/teal/fuchsia/slate),
+  each with a tuned light and dark value defined as `--feat-*` custom properties — they follow
+  the theme toggle and bake correctly into SVG/PNG exports. Color is shared by the linear and
+  circular views (one `featureColor`) and keys on the verbatim type, so an origin and a primer
+  read apart even though both collapse to the "misc" glyph shape. A legend under the toolbar
+  lists only the types actually present.
 
 **Still open:** arbitrary-range sequence selection (the rest of FR-15); multi-record files
-(FR-4); circular label de-collision / leader-lines (FR-11); glyph↔sequence hover linking
-(FR-21); per-track recolor (the color field exists but nothing renders per-track color yet).
+(FR-4); circular label de-collision / leader-lines (FR-11); glyph↔sequence hover *linking*
+highlight (FR-21 — the reciprocal map↔sequence highlight, beyond the tooltip); per-track
+recolor (the color field exists but nothing renders per-track color yet).
 
 ## 5. Goals & non-goals
 
@@ -196,6 +217,10 @@ Priorities: **P0** = correctness/must-fix, **P1** = core roadmap, **P2** = later
 ### 6.6 Feature interaction
 - **FR-20 (P1):** Click a feature → detail panel (name, type, strand, start/end, length).
 - **FR-21 (P2):** Hover highlight linking map glyph ↔ sequence span.
+- **FR-27 (P2):** Live hover tooltip on the map (linear + circular) showing name, verbatim
+  type, range/length, strand, description, and track; retain `/note`, `/product`, `/gene`
+  qualifiers from GenBank/SnapGene instead of dropping them.
+- **FR-28 (P2):** Distinct, theme-safe per-type feature color palette with a legend.
 
 ### 6.7 Export & output
 - **FR-22 (P1):** Export current view (linear or circular), with a resolution/scale option.

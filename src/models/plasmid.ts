@@ -1,12 +1,19 @@
 export type Strand = "+" | "-";
 
+export type FeatureType = "CDS" | "promoter" | "terminator" | "marker" | "misc";
+
 export interface Feature {
   id: string;
   name: string;
-  type: "CDS" | "promoter" | "terminator" | "marker" | "misc";
+  type: FeatureType;
   start: number; // 1-based inclusive
   end: number;
   strand: Strand;
+  // The verbatim type from the source file (e.g. "rep_origin", "LTR", "primer_bind"),
+  // kept for display since `type` collapses everything into five buckets.
+  rawType?: string;
+  // Free text from /note, /product, /function or /gene qualifiers, shown on hover.
+  description?: string;
 }
 
 export type Topology = "circular" | "linear";

@@ -95,7 +95,7 @@ describe("PlasmidViewer geometry", () => {
     });
 
     it("shows the viewport readout over the full reference by default", () => {
-        expect(render([reference])).toContain("1–100 of 100 bp");
+        expect(render([reference])).toContain("1–100 / 100 bp");
     });
 
     it("renders concentric rings for every track in circular view", () => {

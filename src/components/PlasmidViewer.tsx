@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import Box from "@mui/joy/Box";
 import Button from "@mui/joy/Button";
+import IconButton from "@mui/joy/IconButton";
 import Stack from "@mui/joy/Stack";
 import ButtonGroup from "@mui/joy/ButtonGroup";
 import Select from "@mui/joy/Select";
@@ -18,6 +19,9 @@ import { DiffTrack } from "./DiffTrack";
 import { SequenceTrack } from "./SequenceTrack";
 import { DetailPanel, type Selection } from "./DetailPanel";
 import { TrackPanel } from "./TrackPanel";
+import { FeatureTooltip, type HoverState } from "./FeatureTooltip";
+import { FeatureLegend } from "./FeatureLegend";
+import { categoriesPresent } from "../utils/featureStyle";
 import { parseFasta } from "../parsers/fasta";
 import { alignSequences, calculateOffset, type Mismatch } from "../utils/alignment";
 import { gcContent } from "../utils/sequence";
@@ -46,6 +50,7 @@ export function PlasmidViewer({ tracks, setTracks, viewMode, setViewMode }: Plas
     // all derived from it, so they cannot drift out of sync (FR-6, FR-13).
     const [viewport, setViewport] = useState<Viewport>({ start: 1, end: plasmid.length });
     const [selection, setSelection] = useState<Selection | null>(null);
+    const [hover, setHover] = useState<HoverState | null>(null);
     const [exportScale, setExportScale] = useState(2);
     const [error, setError] = useState<string | null>(null);
     const [exporting, setExporting] = useState(false);
@@ -122,6 +127,7 @@ export function PlasmidViewer({ tracks, setTracks, viewMode, setViewMode }: Plas
     const startPanDrag = (e: React.PointerEvent) => {
         if (e.button !== 0 && e.pointerType === "mouse") return;
         e.preventDefault();
+        setHover(null); // a tooltip anchored to the old cursor position is only in the way while panning
         let lastX = e.clientX;
         const onMove = (move: PointerEvent) => {
             panByPx(move.clientX - lastX);
@@ -160,15 +166,33 @@ export function PlasmidViewer({ tracks, setTracks, viewMode, setViewMode }: Plas
         document.addEventListener('pointerup', onUp);
     };
 
-    const handleWheel = (e: React.WheelEvent) => {
-        // Plain wheel is left alone so the page can still scroll; modifier + wheel zooms
-        // around the cursor, which is what a map is expected to do.
-        if (!e.ctrlKey && !e.metaKey) return;
-        e.preventDefault();
-        const rect = e.currentTarget.getBoundingClientRect();
-        const anchorBp = viewport.start + ((e.clientX - rect.left) / containerWidth) * spanBp;
-        setSpan(spanBp * (e.deltaY > 0 ? 1.25 : 0.8), anchorBp);
-    };
+    // Wheel = pan, modifier+wheel = zoom around the cursor. This is a native, non-passive
+    // listener because React's onWheel is passive, so its preventDefault is ignored — and
+    // without preventDefault a plain wheel would scroll the page instead of the map.
+    useEffect(() => {
+        const svg = linearSvgRef.current;
+        if (!svg || viewMode !== "linear") return;
+
+        const onWheel = (e: WheelEvent) => {
+            if (e.ctrlKey || e.metaKey) {
+                e.preventDefault();
+                const rect = svg.getBoundingClientRect();
+                const anchorBp = viewport.start + ((e.clientX - rect.left) / containerWidth) * spanBp;
+                setSpan(spanBp * (e.deltaY > 0 ? 1.25 : 0.8), anchorBp);
+                return;
+            }
+
+            const delta = Math.abs(e.deltaX) >= Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+            if (delta === 0) return;
+            // At the edge in the scroll direction, let the page scroll rather than trapping it.
+            if ((delta > 0 && viewport.end >= plasmid.length) || (delta < 0 && viewport.start <= 1)) return;
+            e.preventDefault();
+            panByPx(-delta);
+        };
+
+        svg.addEventListener("wheel", onWheel, { passive: false });
+        return () => svg.removeEventListener("wheel", onWheel);
+    }, [viewMode, viewport.start, viewport.end, spanBp, containerWidth, plasmid.length, setSpan, panByPx]);
 
     const mismatchesByTrackId = useMemo(() => {
         const map = new Map<string, Mismatch[]>();
@@ -190,6 +214,10 @@ export function PlasmidViewer({ tracks, setTracks, viewMode, setViewMode }: Plas
 
     const visibleTracks = useMemo(() => tracks.filter(t => t.isVisible), [tracks]);
     const referenceGc = useMemo(() => gcContent(plasmid.sequence), [plasmid.sequence]);
+    const legendCategories = useMemo(
+        () => categoriesPresent(visibleTracks.flatMap(t => t.plasmid.features)),
+        [visibleTracks],
+    );
 
     const seqRows = sequenceRowCount(showComplement, showTranslation);
     const { boxes, totalHeight } = useMemo(() => stackTracks(
@@ -226,6 +254,10 @@ export function PlasmidViewer({ tracks, setTracks, viewMode, setViewMode }: Plas
 
     const selectFeature = (feature: Feature, trackName: string, sequence: string) =>
         setSelection(featureSelection(feature, trackName, sequence));
+
+    const showTip = (feature: Feature, trackName: string, x: number, y: number) =>
+        setHover({ feature, trackName, x, y });
+    const hideTip = () => setHover(null);
 
     /** Brings a feature into view without changing the zoom unless it cannot fit. */
     const reveal = useCallback((refStart: number, refEnd: number) => {
@@ -332,36 +364,24 @@ export function PlasmidViewer({ tracks, setTracks, viewMode, setViewMode }: Plas
                 </ButtonGroup>
 
                 {viewMode === "linear" && (
-                    <>
-                        <ButtonGroup variant="outlined">
-                            <Button onClick={zoomOut} disabled={spanBp >= plasmid.length}>−</Button>
-                            <Button onClick={zoomIn} disabled={spanBp <= MIN_SPAN_BP}>+</Button>
-                            <Button onClick={fit}>Fit</Button>
-                        </ButtonGroup>
-
-                        <ButtonGroup variant="outlined">
-                            <Button
-                                onClick={() => setShowComplement(v => !v)}
-                                color={showComplement ? "primary" : "neutral"}
-                                aria-pressed={showComplement}
-                                title="Show the complement strand"
-                            >
-                                Complement
-                            </Button>
-                            <Button
-                                onClick={() => setShowTranslation(v => !v)}
-                                color={showTranslation ? "primary" : "neutral"}
-                                aria-pressed={showTranslation}
-                                title="Show all three forward reading frames"
-                            >
-                                Translation
-                            </Button>
-                        </ButtonGroup>
-
-                        <Typography level="body-xs" sx={{ fontFamily: 'code', color: 'text.tertiary' }}>
-                            {`${Math.round(viewport.start)}–${Math.round(viewport.end)} of ${plasmid.length} bp`}
-                        </Typography>
-                    </>
+                    <ButtonGroup variant="outlined">
+                        <Button
+                            onClick={() => setShowComplement(v => !v)}
+                            color={showComplement ? "primary" : "neutral"}
+                            aria-pressed={showComplement}
+                            title="Show the complement strand"
+                        >
+                            Complement
+                        </Button>
+                        <Button
+                            onClick={() => setShowTranslation(v => !v)}
+                            color={showTranslation ? "primary" : "neutral"}
+                            aria-pressed={showTranslation}
+                            title="Show all three forward reading frames"
+                        >
+                            Translation
+                        </Button>
+                    </ButtonGroup>
                 )}
 
                 <Box sx={{ ml: 'auto', display: 'flex', gap: 1, alignItems: 'center' }}>
@@ -391,6 +411,8 @@ export function PlasmidViewer({ tracks, setTracks, viewMode, setViewMode }: Plas
                 onClear={() => setSelection(null)}
             />
 
+            <FeatureLegend categories={legendCategories} />
+
             <Box ref={containerRef} sx={{ width: '100%', p: 2, overflow: 'hidden', bgcolor: 'background.body', borderRadius: 'md' }}>
                 {viewMode === "linear" ? (
                     // position: relative anchors the per-track HTML controls over the SVG. The map
@@ -407,7 +429,6 @@ export function PlasmidViewer({ tracks, setTracks, viewMode, setViewMode }: Plas
                             role="application"
                             aria-label="Plasmid map. Arrow keys pan, plus and minus zoom, n and p step through features."
                             onKeyDown={handleKeyDown}
-                            onWheel={handleWheel}
                             onPointerDown={startPanDrag}
                         >
                             <Ruler
@@ -475,6 +496,8 @@ export function PlasmidViewer({ tracks, setTracks, viewMode, setViewMode }: Plas
                                                     labelPlacement={labelPlacement}
                                                     selected={feature.id === selectedFeatureId}
                                                     onClick={(f) => selectFeature(f, track.plasmid.name, track.plasmid.sequence)}
+                                                    onHover={(f, x, y) => showTip(f, track.plasmid.name, x, y)}
+                                                    onHoverEnd={hideTip}
                                                 />
                                             ))}
                                         </g>
@@ -507,6 +530,57 @@ export function PlasmidViewer({ tracks, setTracks, viewMode, setViewMode }: Plas
                                 );
                             })}
                         </svg>
+
+                        {/* Zoom + position readout, floated over the map itself rather than the page toolbar. */}
+                        <Box sx={{ position: 'absolute', top: 8, right: 8, display: 'flex', gap: 0.75, alignItems: 'center' }}>
+                            <Typography
+                                level="body-xs"
+                                sx={{
+                                    fontFamily: 'code', color: 'text.tertiary',
+                                    bgcolor: 'background.surface', border: '1px solid', borderColor: 'divider',
+                                    borderRadius: 'sm', px: 0.75, py: 0.25, boxShadow: 'sm',
+                                }}
+                            >
+                                {`${Math.round(viewport.start)}–${Math.round(viewport.end)} / ${plasmid.length} bp`}
+                            </Typography>
+                            <ButtonGroup size="sm" variant="soft" sx={{ bgcolor: 'background.surface', boxShadow: 'sm' }}>
+                                <IconButton onClick={zoomOut} disabled={spanBp >= plasmid.length} aria-label="Zoom out" title="Zoom out">−</IconButton>
+                                <IconButton onClick={zoomIn} disabled={spanBp <= MIN_SPAN_BP} aria-label="Zoom in" title="Zoom in">+</IconButton>
+                                <IconButton onClick={fit} aria-label="Fit whole plasmid" title="Fit whole plasmid">⤢</IconButton>
+                            </ButtonGroup>
+                        </Box>
+
+                        {/* Scroll affordances: visible only when there is more sequence that way; they pan on click. */}
+                        {viewport.start > 1 && (
+                            <IconButton
+                                size="sm"
+                                variant="soft"
+                                onClick={() => panByBp(-Math.round(spanBp * 0.5))}
+                                aria-label="Scroll left"
+                                title="Scroll left — or drag the map / use the wheel"
+                                sx={{
+                                    position: 'absolute', left: 8, top: '50%', transform: 'translateY(-50%)',
+                                    bgcolor: 'background.surface', boxShadow: 'md', borderRadius: '50%', opacity: 0.92,
+                                }}
+                            >
+                                ‹
+                            </IconButton>
+                        )}
+                        {viewport.end < plasmid.length && (
+                            <IconButton
+                                size="sm"
+                                variant="soft"
+                                onClick={() => panByBp(Math.round(spanBp * 0.5))}
+                                aria-label="Scroll right"
+                                title="Scroll right — or drag the map / use the wheel"
+                                sx={{
+                                    position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)',
+                                    bgcolor: 'background.surface', boxShadow: 'md', borderRadius: '50%', opacity: 0.92,
+                                }}
+                            >
+                                ›
+                            </IconButton>
+                        )}
 
                         {visibleTracks.map((track, i) => track.id === referenceTrack.id ? null : (
                             <Button
@@ -550,6 +624,8 @@ export function PlasmidViewer({ tracks, setTracks, viewMode, setViewMode }: Plas
                                 gcContent={referenceGc}
                                 selectedFeatureId={selectedFeatureId}
                                 onFeatureClick={(f, t) => selectFeature(f, t.name, t.sequence)}
+                                onFeatureHover={(f, t, x, y) => showTip(f, t.name, x, y)}
+                                onFeatureHoverEnd={hideTip}
                                 tracks={visibleTracks.map(t => ({
                                     id: t.id,
                                     name: t.plasmid.name,
@@ -579,6 +655,8 @@ export function PlasmidViewer({ tracks, setTracks, viewMode, setViewMode }: Plas
                     ))}
                 </Stack>
             )}
+
+            <FeatureTooltip hover={hover} />
         </Box>
     );
 }

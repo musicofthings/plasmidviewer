@@ -12,26 +12,46 @@ export function featureFromTeselagen(f: TeselagenFeature): Feature {
         start: f.start + 1,
         end: f.end + 1,
         strand: f.strand === -1 ? "-" : "+",
+        rawType: f.type,
+        description: describeFeature(f.notes),
     };
+}
+
+// The most human-useful qualifier, in priority order. GenBank/SnapGene store these as
+// arrays of strings; we join multiples so nothing is silently dropped.
+export function describeFeature(notes: TeselagenFeature["notes"]): string | undefined {
+    if (!notes) return undefined;
+    for (const key of ["note", "product", "function", "gene"]) {
+        const values = notes[key];
+        if (values && values.length) {
+            const joined = values.filter(Boolean).join("; ").trim();
+            if (joined) return joined;
+        }
+    }
+    return undefined;
 }
 
 export function plasmidFromTeselagen(parsed: TeselagenSequence, fallbackName: string): Plasmid {
     const sequence = (parsed.sequence || "").toUpperCase();
 
+    // Teselagen splits primer_bind annotations into a separate `primers` array; folding them
+    // back in means the map shows them too instead of silently dropping them.
+    const rawFeatures = [...(parsed.features || []), ...(parsed.primers || [])];
+
     return {
         name: parsed.name || fallbackName,
         length: sequence.length,
         sequence,
-        features: (parsed.features || []).map(featureFromTeselagen),
+        features: rawFeatures.map(featureFromTeselagen),
         topology: parsed.circular ? "circular" : "linear",
     };
 }
 
 export function normalizeFeatureType(type: string | undefined): Feature["type"] {
     const t = (type || "").toLowerCase();
-    if (t === "cds" || t === "orf") return "CDS";
-    if (t.includes("promoter")) return "promoter";
-    if (t.includes("terminator")) return "terminator";
+    if (t === "cds" || t === "orf" || t === "gene" || t === "sig_peptide") return "CDS";
+    if (t.includes("promoter") || t === "enhancer" || t === "rbs" || t === "-35_signal" || t === "-10_signal") return "promoter";
+    if (t.includes("terminator") || t.includes("polya")) return "terminator";
     if (t.includes("resistance") || t.includes("marker")) return "marker";
     return "misc";
 }
@@ -43,11 +63,13 @@ export interface TeselagenFeature {
     start: number;
     end: number;
     strand?: number;
+    notes?: Record<string, (string | undefined)[] | undefined>;
 }
 
 export interface TeselagenSequence {
     name?: string;
     sequence?: string;
     features?: TeselagenFeature[];
+    primers?: TeselagenFeature[];
     circular?: boolean;
 }

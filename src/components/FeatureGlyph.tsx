@@ -1,5 +1,6 @@
 import type { Feature } from "../models/plasmid";
 import type { LabelPlacement } from "../utils/layout";
+import { featureColor } from "../utils/featureStyle";
 
 interface FeatureGlyphProps {
     feature: Feature;
@@ -10,16 +11,18 @@ interface FeatureGlyphProps {
     labelPlacement: LabelPlacement;
     selected?: boolean;
     onClick?: (feature: Feature) => void;
+    onHover?: (feature: Feature, clientX: number, clientY: number) => void;
+    onHoverEnd?: () => void;
 }
 
 const ARROW_HEAD_WIDTH = 10;
 
 export function FeatureGlyph({
-    feature, startPx, endPx, y, height, labelPlacement, selected = false, onClick,
+    feature, startPx, endPx, y, height, labelPlacement, selected = false, onClick, onHover, onHoverEnd,
 }: FeatureGlyphProps) {
     const width = Math.max(endPx - startPx, 2);
     const right = startPx + width;
-    const color = getFeatureColor(feature.type);
+    const color = featureColor(feature);
     const mid = y + height / 2;
 
     let d: string;
@@ -45,13 +48,16 @@ export function FeatureGlyph({
                 e.stopPropagation();
                 onClick?.(feature);
             }}
+            // Hover updates on enter/move so the tooltip tracks the cursor; leave clears it.
+            onMouseEnter={(e) => onHover?.(feature, e.clientX, e.clientY)}
+            onMouseMove={(e) => onHover?.(feature, e.clientX, e.clientY)}
+            onMouseLeave={() => onHoverEnd?.()}
             tabIndex={0}
             role="button"
             aria-label={describe}
             aria-pressed={selected}
             style={{ cursor: 'pointer' }}
         >
-            <title>{describe}</title>
             <path
                 d={d}
                 fill={color}
@@ -90,14 +96,4 @@ export function FeatureGlyph({
             )}
         </g>
     );
-}
-
-function getFeatureColor(type: Feature["type"]): string {
-    switch (type) {
-        case "CDS": return "var(--joy-palette-success-500)";
-        case "promoter": return "var(--joy-palette-primary-500)";
-        case "terminator": return "var(--joy-palette-danger-500)";
-        case "marker": return "var(--joy-palette-warning-500)";
-        default: return "var(--joy-palette-neutral-500)";
-    }
 }
