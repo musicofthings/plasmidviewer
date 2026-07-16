@@ -97,6 +97,10 @@ clinical reporting.
   start/end/length, or position/ref/query, plus *Zoom to*.
 - **Dark mode (FR-24)** with a toggle, and **view-aware export (FR-22)** — exports the active
   view (linear or circular) at 1x/2x/3x.
+- **Inline errors & warnings (FR-3):** parse/align/export failures surface inline; a file with
+  non-standard bases (IUPAC ambiguity codes or junk, anything outside `ACGTU`) loads anyway and
+  shows a non-blocking warning naming the offending characters — e.g. `test.gb`'s stray `h`
+  reports "contains 1 non-standard base (H)".
 
 **Also shipped (Milestone 3):**
 - **Virtualization (FR-9):** lanes are packed in *track-local* pixels, so the layout depends
@@ -115,7 +119,22 @@ clinical reporting.
   `0` fits, `n`/`p` walk the features, `Esc` clears. Glyphs are focusable and activate on
   Enter/Space.
 
-**Still open:** drag-to-align remains mouse-only, and there is no touch path.
+**Also shipped (P2 backlog cleared):**
+- **Topology detection (FR-5):** GenBank/SnapGene records set circular vs. linear; the first
+  file opened selects the matching initial view. FASTA carries no topology, so it is linear.
+- **Circular metadata (FR-12):** the hub shows length, topology and GC%, and an origin tick
+  marks base 1 at 12 o'clock so orientation is unambiguous.
+- **Track management (FR-19):** a track panel to rename, show/hide, reorder, and remove each
+  track. Reordering is meaningful — moving a track to the top makes it the new reference, which
+  recomputes every diff against it.
+- **Copy subsequence (FR-15, partial):** selecting a feature exposes a *Copy sequence* button
+  that copies exactly that feature's bases. Drag-to-select an arbitrary range is still open.
+- **Touch drag (FR-25):** pan and track-align drags now use pointer events, so touch and pen
+  work, not just the mouse.
+
+**Still open:** arbitrary-range sequence selection (the rest of FR-15); multi-record files
+(FR-4); circular label de-collision / leader-lines (FR-11); glyph↔sequence hover linking
+(FR-21); per-track recolor (the color field exists but nothing renders per-track color yet).
 
 ## 5. Goals & non-goals
 

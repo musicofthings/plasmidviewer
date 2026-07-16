@@ -1,3 +1,4 @@
+import { useState } from "react";
 import Sheet from "@mui/joy/Sheet";
 import Box from "@mui/joy/Box";
 import Button from "@mui/joy/Button";
@@ -7,7 +8,7 @@ import type { Feature } from "../models/plasmid";
 import type { Mismatch } from "../utils/alignment";
 
 export type Selection =
-    | { kind: "feature"; feature: Feature; trackName: string }
+    | { kind: "feature"; feature: Feature; trackName: string; sequence: string }
     | { kind: "mismatch"; mismatch: Mismatch; trackName: string };
 
 interface DetailPanelProps {
@@ -17,6 +18,19 @@ interface DetailPanelProps {
 }
 
 export function DetailPanel({ selection, onZoomTo, onClear }: DetailPanelProps) {
+    const [copied, setCopied] = useState(false);
+
+    const copySequence = async (sequence: string) => {
+        try {
+            await navigator.clipboard.writeText(sequence);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 1500);
+        } catch {
+            // Clipboard access can be denied (insecure context, permissions) — the button
+            // simply does nothing rather than throwing at the user.
+        }
+    };
+
     if (!selection) {
         return (
             <Sheet variant="soft" sx={{ p: 2, borderRadius: 'md', minHeight: 96 }}>
@@ -65,6 +79,17 @@ export function DetailPanel({ selection, onZoomTo, onClear }: DetailPanelProps) 
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1, gap: 1 }}>
                 <Typography level="title-md" sx={{ wordBreak: 'break-word' }}>{title}</Typography>
                 <Box sx={{ display: 'flex', gap: 1, flexShrink: 0 }}>
+                    {selection.kind === "feature" && (
+                        <Button
+                            size="sm"
+                            variant="soft"
+                            color="neutral"
+                            onClick={() => copySequence(selection.sequence)}
+                            disabled={selection.sequence.length === 0}
+                        >
+                            {copied ? "Copied ✓" : "Copy sequence"}
+                        </Button>
+                    )}
                     <Button size="sm" variant="soft" onClick={() => onZoomTo(zoomStart, zoomEnd)}>
                         Zoom to
                     </Button>

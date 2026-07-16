@@ -9,9 +9,14 @@ export interface Feature {
   strand: Strand;
 }
 
+export type Topology = "circular" | "linear";
+
 export interface Plasmid {
   name: string;
   length: number;
   sequence: string;
   features: Feature[];
+  // What the source file declared. FASTA carries no topology, so it defaults to "linear";
+  // GenBank/SnapGene set it from the record (FR-5).
+  topology: Topology;
 }

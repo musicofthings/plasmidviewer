@@ -36,6 +36,12 @@ describe("parseGenBank", () => {
         const plasmid = await parseGenBank(fixtureFile(genbankFixture, "test.gb"));
         expect(plasmid.features.map(f => f.end - f.start + 1)).toEqual([30, 11, 11]);
     });
+
+    it("reads topology from the LOCUS line (FR-5)", async () => {
+        // test.gb's LOCUS line declares "circular".
+        const plasmid = await parseGenBank(fixtureFile(genbankFixture, "test.gb"));
+        expect(plasmid.topology).toBe("circular");
+    });
 });
 
 describe("featureFromTeselagen", () => {
@@ -71,6 +77,8 @@ describe("parseFasta", () => {
         expect(plasmid.length).toBe(plasmid.sequence.length);
         expect(plasmid.sequence).toMatch(/^[ACGT]+$/);
         expect(plasmid.features).toEqual([]);
+        // FASTA carries no topology, so it defaults to linear (FR-5).
+        expect(plasmid.topology).toBe("linear");
     });
 
     it("uppercases and strips non-letter characters", () => {

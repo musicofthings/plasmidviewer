@@ -23,6 +23,7 @@ export function plasmidFromTeselagen(parsed: TeselagenSequence, fallbackName: st
         length: sequence.length,
         sequence,
         features: (parsed.features || []).map(featureFromTeselagen),
+        topology: parsed.circular ? "circular" : "linear",
     };
 }
 
@@ -48,4 +49,5 @@ export interface TeselagenSequence {
     name?: string;
     sequence?: string;
     features?: TeselagenFeature[];
+    circular?: boolean;
 }

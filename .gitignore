@@ -12,6 +12,10 @@ dist
 dist-ssr
 *.local
 
+# Build info / test coverage
+*.tsbuildinfo
+coverage
+
 # Local agent/session state — machine-specific, not project content
 .claude/session/
 .claude/settings.local.json

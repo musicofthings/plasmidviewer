@@ -76,6 +76,42 @@ export function translateFrame(sequence: string, frame: 0 | 1 | 2): Residue[] {
     return residues;
 }
 
+// The four canonical DNA bases plus U for RNA. Anything else — IUPAC ambiguity codes
+// (N, R, Y, H, …) or genuine junk — is "non-standard": the viewer renders it grey and
+// GC%/translation ignore it, so we surface it rather than let it pass silently (FR-3).
+const STANDARD_BASES = new Set(["A", "C", "G", "T", "U"]);
+
+export interface NonStandardBases {
+    /** Total number of non-standard base occurrences in the sequence. */
+    total: number;
+    /** Distinct offending characters (upper-cased) with counts, most frequent first. */
+    characters: { char: string; count: number }[];
+}
+
+export function findNonStandardBases(sequence: string): NonStandardBases {
+    const counts = new Map<string, number>();
+    for (const base of sequence.toUpperCase()) {
+        if (!STANDARD_BASES.has(base)) counts.set(base, (counts.get(base) ?? 0) + 1);
+    }
+
+    const characters = [...counts.entries()]
+        .map(([char, count]) => ({ char, count }))
+        .sort((a, b) => b.count - a.count || a.char.localeCompare(b.char));
+
+    return { total: characters.reduce((sum, c) => sum + c.count, 0), characters };
+}
+
+/** A one-line summary of `findNonStandardBases`, or null when the sequence is clean. */
+export function describeNonStandardBases(result: NonStandardBases): string | null {
+    if (result.total === 0) return null;
+
+    const list = result.characters
+        .map(c => (c.count > 1 ? `${c.char}×${c.count}` : c.char))
+        .join(", ");
+    const noun = result.total === 1 ? "base" : "bases";
+    return `${result.total} non-standard ${noun} (${list})`;
+}
+
 /** GC content as a fraction of A/T/G/C bases; 0 for an empty or non-nucleotide sequence. */
 export function gcContent(sequence: string): number {
     let gc = 0;

@@ -11,7 +11,7 @@ import type { Plasmid } from "../models/plasmid";
 const CONTAINER_WIDTH = 1000;
 
 function plasmid(name: string, length: number, features: Plasmid["features"] = []): Plasmid {
-    return { name, length, sequence: "ACGT".repeat(Math.ceil(length / 4)).slice(0, length), features };
+    return { name, length, sequence: "ACGT".repeat(Math.ceil(length / 4)).slice(0, length), features, topology: "linear" };
 }
 
 function track(id: string, p: Plasmid, offsetBp = 0): Track {

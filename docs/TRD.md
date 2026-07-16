@@ -59,10 +59,11 @@ interface Feature {
   end: number;   // 1-based inclusive
   strand: Strand;
 }
-interface Plasmid { name: string; length: number; sequence: string; features: Feature[]; }
+type Topology = "circular" | "linear";  // from the source file; FASTA defaults to linear (FR-5)
+interface Plasmid { name: string; length: number; sequence: string; features: Feature[]; topology: Topology; }
 
 // state/viewerState.ts
-interface Track { id: string; plasmid: Plasmid; offset: number; color: string; isVisible: boolean; }
+interface Track { id: string; plasmid: Plasmid; offsetBp: number; color: string; isVisible: boolean; }
 interface Viewport { start: number; end: number; }
 ```
 
@@ -81,8 +82,10 @@ convention at the boundary; no other convention may leak past `parsers/`.
 | `components/SequenceViewer.tsx` | Scrollable base-level strip, base coloring | live |
 | `components/CircularBackbone.tsx` | Circular arcs + along-arc labels | live (ref track only) |
 | `components/Ruler.tsx` | bp axis with 1/2/5×10ⁿ ticks; drag surface for panning | live |
-| `components/DetailPanel.tsx` | Feature *or* mismatch detail + "Zoom to" | live |
+| `components/DetailPanel.tsx` | Feature *or* mismatch detail + "Zoom to"; feature *Copy sequence* (FR-15) | live |
+| `components/TrackPanel.tsx` | Rename / show-hide / reorder / remove tracks (FR-19) | live |
 | `utils/layout.ts` | Tick steps; greedy lane packing + label placement | live |
+| `utils/sequence.ts` | complement/translation/GC + non-standard-base detection (FR-3) | live |
 | `parsers/fasta.ts` | FASTA → Plasmid (no features) | live |
 | `parsers/teselagen.ts` | Teselagen record → `Plasmid`/`Feature`; **the one place coordinates are converted** | live |
 | `parsers/genbank.ts` | GenBank → Plasmid (via `teselagen.ts`) | live |
@@ -183,18 +186,22 @@ Ordered roughly by severity. Items 1–4 were the Milestone 1 (P0) set and are *
    a concentric ring (FR-10). The circular view still ignores the viewport — it always shows
    the whole construct — which is intentional: zoom/pan are linear-map concepts.
 6. ~~**Zoom is sequence-only (P1).**~~ **Resolved** — the viewport now drives the map (§5.1).
-7. **Error handling (P1, mostly done).** Parse, "Align to File" and *export* failures are now
+7. ~~**Error handling (P1).**~~ **Resolved.** Parse, "Align to File" and *export* failures are
    surfaced inline instead of being swallowed, and the parse error is no longer rendered only
-   in the empty state (so a failed *second* track is visible too). Still outstanding for FR-3:
-   warnings for non-nucleotide characters — `test.gb` contains a stray `h` base that is parsed
-   and rendered grey with no warning.
+   in the empty state (so a failed *second* track is visible too). FR-3's remaining piece —
+   **non-standard-base warnings** — now ships: `findNonStandardBases`/`describeNonStandardBases`
+   in `utils/sequence.ts` flag any base outside `ACGTU` (so RNA and clean DNA stay quiet, but
+   IUPAC ambiguity codes and junk are surfaced), and `App` shows them as a **non-blocking
+   `warning`** distinct from the red `error` — the track still loads. The stray `h` in
+   `test.gb` now renders "contains 1 non-standard base (H)". Verified end-to-end in the browser.
 8. ~~**Code hygiene (P2).**~~ **Resolved** in the files touched: `substr`/`Math.random()` ids
    replaced with `crypto.randomUUID()`, and the `any`-typed feature mapping in the parsers is
    now typed via `TeselagenFeature`.
-9. **Drag alignment is mouse-only (P2, partly resolved).** The *map* is now keyboard-navigable
+9. ~~**Drag alignment is mouse-only (P2).**~~ **Resolved.** The *map* is keyboard-navigable
    (FR-25): the linear SVG is a focusable widget (arrows pan, `+`/`−` zoom, `0` fits, `n`/`p`
    walk the features, `Esc` clears) and each glyph is focusable and activates on Enter/Space.
-   Shifting a track's alignment is still drag-only, and there is no touch path.
+   Both the pan drag and the track-align drag now use **pointer events** with `touch-action:
+   none` on the map, so touch and pen drag work too — not just the mouse.
 10. ~~**Dark mode defined but inert (P2).**~~ **Resolved** (FR-24): toggle wired via Joy's
     `useColorScheme`, hardcoded `#fdfdfd`/`#f9f9f9` replaced with `background.surface`.
     **Trap worth remembering:** Joy's dark neutral scale is *inverted* — `text.primary`
@@ -211,12 +218,27 @@ Ordered roughly by severity. Items 1–4 were the Milestone 1 (P0) set and are *
     mitigation. The dependency is now **removed**: the linear map is a single SVG, so export is
     serialization, and PNG rasterizes through `Image.onload` — which has no rAF dependency, so
     a background tab no longer matters.
+13. **P2 backlog cleared: topology, circular metadata, track management, copy, touch.** FR-5
+    (topology from the record, initial view follows the reference), FR-12 (circular hub shows
+    length/topology/GC% and an origin tick at base 1), FR-19 (`TrackPanel`: rename via a Joy
+    `Input`, show/hide, reorder — top row is the reference — and remove), FR-15 (feature *Copy
+    sequence* via `navigator.clipboard`, guarded for insecure contexts), FR-25 touch (pointer
+    events). Still open: arbitrary-range selection, multi-record files (FR-4), circular label
+    de-collision (FR-11), hover linking (FR-21), per-track recolor.
+14. **Dev-only: Vite dep re-optimization can log a transient "Invalid hook call".** Importing a
+    new `@mui/joy/*` subpath *while the dev server is already running* makes Vite re-bundle and
+    reload, and for that one reload a second React/emotion copy is briefly live — MUI's `Input`
+    logs an invalid-hook-call, then it clears. A fresh `npm run dev` never hits it. `vite.config
+    .ts` now pins the Joy subpaths in `optimizeDeps.include` so even a mid-session import is
+    pre-bundled and silent. Not a runtime bug — production build and a cold dev start are clean.
 
 ## 8. Testing strategy
 
-**Vitest** (`npm test`), 70 tests in five files. Fixtures live in `src/__fixtures__/` and are
+**Vitest** (`npm test`), 78 tests in five files. Fixtures live in `src/__fixtures__/` and are
 loaded with Vite's `?raw` import, so tests need no Node `fs` access and typecheck under the
-app tsconfig.
+app tsconfig. **CI** (`.github/workflows/ci.yml`) runs `lint` → `test` → `build` on every push
+to `main` and every PR. `parsers.test.ts` also asserts topology (FR-5): `test.gb`'s LOCUS line
+is `circular`, FASTA defaults to `linear`.
 
 - `parsers/parsers.test.ts` — asserts GenBank feature coordinates against `test.gb`'s own
   FEATURES table (`CDS 1..30`, `promoter 40..50`, `terminator 80..90`), which is 1-based
@@ -228,6 +250,9 @@ app tsconfig.
 - `utils/layout.test.ts` — tick steps, and lane packing: overlapping features get separate
   lanes, a lane is reused once free, an outside label reserves its own space, and a label near
   the right edge flips left instead of being clipped.
+- `utils/sequence.test.ts` — complement/translation/GC, plus non-standard-base detection
+  (FR-3): `U` stays quiet, IUPAC codes and junk are flagged case-insensitively and ordered by
+  frequency, and the one-line summary shows counts only when a base repeats.
 - `components/PlasmidViewer.test.tsx` — renders via `react-dom/server` and asserts the emitted
   SVG geometry. `containerWidth` defaults to 1000 before the ResizeObserver fires and effects
   don't run under `renderToString`, so the layout math is deterministic and the shared-scale
@@ -247,7 +272,7 @@ particular sub/ins/del breakdown.
 Still to do: a real `.dna` fixture (there is none in the repo, so the GenBank↔SnapGene
 equivalence of FR-2 is currently enforced *structurally* — both parsers call the same
 `featureFromTeselagen` — and tested at that function, rather than through a parsed `.dna`
-file). Component smoke tests for the circular view. Wire `lint` + `test` into CI.
+file). Component smoke tests for the circular view.
 
 ## 9. Proposed technical work (mapped to PRD milestones)
 

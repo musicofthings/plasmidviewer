@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import {
     complement, reverseComplement, translateCodon, translateFrame, gcContent,
+    findNonStandardBases, describeNonStandardBases,
 } from "./sequence";
 
 describe("complement / reverseComplement", () => {
@@ -88,5 +89,49 @@ describe("gcContent", () => {
 
     it("returns 0 for an empty sequence", () => {
         expect(gcContent("")).toBe(0);
+    });
+});
+
+describe("findNonStandardBases", () => {
+    it("finds nothing in a clean ACGT sequence", () => {
+        expect(findNonStandardBases("ACGTACGT")).toEqual({ total: 0, characters: [] });
+    });
+
+    it("does not warn on U (RNA is standard)", () => {
+        expect(findNonStandardBases("ACGUACGU").total).toBe(0);
+    });
+
+    it("flags IUPAC ambiguity codes and junk, case-insensitively", () => {
+        // The stray 'h' in test.gb's sequence is exactly this case.
+        const result = findNonStandardBases("ACGThACGTn");
+        expect(result.total).toBe(2);
+        expect(result.characters).toEqual([
+            { char: "H", count: 1 },
+            { char: "N", count: 1 },
+        ]);
+    });
+
+    it("counts repeats and orders by frequency, then alphabetically", () => {
+        const result = findNonStandardBases("NNNRRH");
+        expect(result.characters).toEqual([
+            { char: "N", count: 3 },
+            { char: "R", count: 2 },
+            { char: "H", count: 1 },
+        ]);
+    });
+});
+
+describe("describeNonStandardBases", () => {
+    it("is null for a clean sequence", () => {
+        expect(describeNonStandardBases(findNonStandardBases("ACGT"))).toBeNull();
+    });
+
+    it("names a single offending base without a count", () => {
+        expect(describeNonStandardBases(findNonStandardBases("ACGTh"))).toBe("1 non-standard base (H)");
+    });
+
+    it("shows counts only when a base repeats", () => {
+        expect(describeNonStandardBases(findNonStandardBases("NNNRRH")))
+            .toBe("6 non-standard bases (N×3, R×2, H)");
     });
 });

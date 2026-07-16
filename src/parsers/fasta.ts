@@ -34,5 +34,7 @@ export function parseFasta(text: string): Plasmid {
         length: sequence.length,
         sequence: sequence.toUpperCase(),
         features: [],
+        // FASTA declares no topology; linear is the honest default (FR-5).
+        topology: "linear",
     };
 }

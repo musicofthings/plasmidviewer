@@ -17,8 +17,10 @@ import { Ruler } from "./Ruler";
 import { DiffTrack } from "./DiffTrack";
 import { SequenceTrack } from "./SequenceTrack";
 import { DetailPanel, type Selection } from "./DetailPanel";
+import { TrackPanel } from "./TrackPanel";
 import { parseFasta } from "../parsers/fasta";
 import { alignSequences, calculateOffset, type Mismatch } from "../utils/alignment";
+import { gcContent } from "../utils/sequence";
 import {
     assignLanes, laneCount, cullToViewport, stackTracks, glyphY, sequenceRowCount,
     bpToLocalPx, GLYPH_HEIGHT, TRACK_HEADER_HEIGHT,
@@ -115,28 +117,32 @@ export function PlasmidViewer({ tracks, setTracks, viewMode, setViewMode }: Plas
         panByBp(-deltaPx / Math.max(pxPerBp, 1e-9));
     }, [panByBp, pxPerBp]);
 
-    const startPanDrag = (e: React.MouseEvent) => {
+    // Pointer events, not mouse events, so touch and pen drag the map too (FR-25). The svg
+    // sets touch-action: none, so a touch-drag pans rather than scrolling the page.
+    const startPanDrag = (e: React.PointerEvent) => {
+        if (e.button !== 0 && e.pointerType === "mouse") return;
         e.preventDefault();
         let lastX = e.clientX;
-        const onMove = (move: MouseEvent) => {
+        const onMove = (move: PointerEvent) => {
             panByPx(move.clientX - lastX);
             lastX = move.clientX;
         };
         const onUp = () => {
-            document.removeEventListener('mousemove', onMove);
-            document.removeEventListener('mouseup', onUp);
+            document.removeEventListener('pointermove', onMove);
+            document.removeEventListener('pointerup', onUp);
         };
-        document.addEventListener('mousemove', onMove);
-        document.addEventListener('mouseup', onUp);
+        document.addEventListener('pointermove', onMove);
+        document.addEventListener('pointerup', onUp);
     };
 
-    const startAlignDrag = (e: React.MouseEvent, trackIndex: number) => {
+    const startAlignDrag = (e: React.PointerEvent, trackIndex: number) => {
+        if (e.button !== 0 && e.pointerType === "mouse") return;
         e.preventDefault();
         e.stopPropagation();
         const startX = e.clientX;
         const startOffsetBp = tracks[trackIndex].offsetBp;
 
-        const onMove = (move: MouseEvent) => {
+        const onMove = (move: PointerEvent) => {
             const deltaBp = Math.round((move.clientX - startX) / pxPerBp);
             setTracks(prev => {
                 const next = [...prev];
@@ -147,11 +153,11 @@ export function PlasmidViewer({ tracks, setTracks, viewMode, setViewMode }: Plas
             });
         };
         const onUp = () => {
-            document.removeEventListener('mousemove', onMove);
-            document.removeEventListener('mouseup', onUp);
+            document.removeEventListener('pointermove', onMove);
+            document.removeEventListener('pointerup', onUp);
         };
-        document.addEventListener('mousemove', onMove);
-        document.addEventListener('mouseup', onUp);
+        document.addEventListener('pointermove', onMove);
+        document.addEventListener('pointerup', onUp);
     };
 
     const handleWheel = (e: React.WheelEvent) => {
@@ -183,6 +189,7 @@ export function PlasmidViewer({ tracks, setTracks, viewMode, setViewMode }: Plas
     }, [tracks, pxPerBp]);
 
     const visibleTracks = useMemo(() => tracks.filter(t => t.isVisible), [tracks]);
+    const referenceGc = useMemo(() => gcContent(plasmid.sequence), [plasmid.sequence]);
 
     const seqRows = sequenceRowCount(showComplement, showTranslation);
     const { boxes, totalHeight } = useMemo(() => stackTracks(
@@ -199,6 +206,7 @@ export function PlasmidViewer({ tracks, setTracks, viewMode, setViewMode }: Plas
         .flatMap(track => track.plasmid.features.map(feature => ({
             feature,
             trackName: track.plasmid.name,
+            sequence: track.plasmid.sequence,
             refStart: feature.start + track.offsetBp,
             refEnd: feature.end + track.offsetBp,
         })))
@@ -208,8 +216,16 @@ export function PlasmidViewer({ tracks, setTracks, viewMode, setViewMode }: Plas
     const selectedFeatureId = selection?.kind === "feature" ? selection.feature.id : undefined;
     const selectedMismatch = selection?.kind === "mismatch" ? selection.mismatch : null;
 
-    const selectFeature = (feature: Feature, trackName: string) =>
-        setSelection({ kind: "feature", feature, trackName });
+    const featureSelection = useCallback((feature: Feature, trackName: string, sequence: string): Selection => ({
+        kind: "feature",
+        feature,
+        trackName,
+        // start/end are 1-based inclusive; slice is 0-based half-open (FR-15).
+        sequence: sequence.slice(feature.start - 1, feature.end),
+    }), []);
+
+    const selectFeature = (feature: Feature, trackName: string, sequence: string) =>
+        setSelection(featureSelection(feature, trackName, sequence));
 
     /** Brings a feature into view without changing the zoom unless it cannot fit. */
     const reveal = useCallback((refStart: number, refEnd: number) => {
@@ -233,10 +249,10 @@ export function PlasmidViewer({ tracks, setTracks, viewMode, setViewMode }: Plas
             : (current + delta + navigableFeatures.length) % navigableFeatures.length;
 
         const target = navigableFeatures[next];
-        setSelection({ kind: "feature", feature: target.feature, trackName: target.trackName });
+        setSelection(featureSelection(target.feature, target.trackName, target.sequence));
         setViewMode("linear");
         reveal(target.refStart, target.refEnd);
-    }, [navigableFeatures, selectedFeatureId, reveal, setViewMode]);
+    }, [navigableFeatures, selectedFeatureId, reveal, setViewMode, featureSelection]);
 
     // FR-25. The map is a focusable widget: arrows pan, +/- zoom, n/p walk the features.
     const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -367,6 +383,8 @@ export function PlasmidViewer({ tracks, setTracks, viewMode, setViewMode }: Plas
 
             {error && <Typography level="body-sm" color="danger">{error}</Typography>}
 
+            <TrackPanel tracks={tracks} setTracks={setTracks} />
+
             <DetailPanel
                 selection={selection}
                 onZoomTo={(s, e) => { setViewMode("linear"); zoomTo(s, e); }}
@@ -384,13 +402,13 @@ export function PlasmidViewer({ tracks, setTracks, viewMode, setViewMode }: Plas
                             width={containerWidth}
                             height={totalHeight}
                             viewBox={`0 0 ${containerWidth} ${totalHeight}`}
-                            style={{ display: 'block', cursor: 'grab', outline: 'none' }}
+                            style={{ display: 'block', cursor: 'grab', outline: 'none', touchAction: 'none' }}
                             tabIndex={0}
                             role="application"
                             aria-label="Plasmid map. Arrow keys pan, plus and minus zoom, n and p step through features."
                             onKeyDown={handleKeyDown}
                             onWheel={handleWheel}
-                            onMouseDown={startPanDrag}
+                            onPointerDown={startPanDrag}
                         >
                             <Ruler
                                 viewportStart={viewport.start}
@@ -434,7 +452,7 @@ export function PlasmidViewer({ tracks, setTracks, viewMode, setViewMode }: Plas
 
                                         <g
                                             transform={`translate(${originPx}, ${box.mapY})`}
-                                            onMouseDown={(e) => {
+                                            onPointerDown={(e) => {
                                                 if (!isReference) startAlignDrag(e, tracks.indexOf(track));
                                             }}
                                         >
@@ -456,7 +474,7 @@ export function PlasmidViewer({ tracks, setTracks, viewMode, setViewMode }: Plas
                                                     height={GLYPH_HEIGHT}
                                                     labelPlacement={labelPlacement}
                                                     selected={feature.id === selectedFeatureId}
-                                                    onClick={(f) => selectFeature(f, track.plasmid.name)}
+                                                    onClick={(f) => selectFeature(f, track.plasmid.name, track.plasmid.sequence)}
                                                 />
                                             ))}
                                         </g>
@@ -528,13 +546,16 @@ export function PlasmidViewer({ tracks, setTracks, viewMode, setViewMode }: Plas
                                 cx={320}
                                 cy={320}
                                 totalLength={plasmid.length}
+                                topology={plasmid.topology}
+                                gcContent={referenceGc}
                                 selectedFeatureId={selectedFeatureId}
-                                onFeatureClick={selectFeature}
+                                onFeatureClick={(f, t) => selectFeature(f, t.name, t.sequence)}
                                 tracks={visibleTracks.map(t => ({
                                     id: t.id,
                                     name: t.plasmid.name,
                                     length: t.plasmid.length,
                                     features: t.plasmid.features,
+                                    sequence: t.plasmid.sequence,
                                 }))}
                             />
                         </svg>

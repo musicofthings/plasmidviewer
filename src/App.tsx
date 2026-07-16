@@ -13,6 +13,7 @@ import { parseGenBank } from "./parsers/genbank";
 import { PlasmidViewer } from "./components/PlasmidViewer";
 import type { Track } from "./state/viewerState";
 import { loadSession, saveSession, clearSession } from "./utils/persistence";
+import { findNonStandardBases, describeNonStandardBases } from "./utils/sequence";
 
 const theme = extendTheme({
   colorSchemes: {
@@ -87,6 +88,8 @@ function App() {
   const [tracks, setTracks] = useState<Track[]>([]);
   const [viewMode, setViewMode] = useState<"linear" | "circular">("linear");
   const [error, setError] = useState<string | null>(null);
+  // A non-blocking notice (e.g. non-standard bases): the track still loads (FR-3).
+  const [warning, setWarning] = useState<string | null>(null);
   // Nothing may be written back until the restore has settled, or the empty initial state
   // would overwrite the very session we are about to load (FR-26).
   const [restored, setRestored] = useState(false);
@@ -128,6 +131,7 @@ function App() {
     if (!file) return;
 
     setError(null);
+    setWarning(null);
     try {
       let p: Plasmid;
       const lowerName = file.name.toLowerCase();
@@ -141,6 +145,11 @@ function App() {
 
       if (p.length === 0) throw new Error(`${file.name} contains no sequence`);
 
+      const nonStandard = describeNonStandardBases(findNonStandardBases(p.sequence));
+      if (nonStandard) {
+        setWarning(`${file.name}: contains ${nonStandard}. These are shown in grey and ignored in GC% and translation.`);
+      }
+
       const newTrack: Track = {
         id: crypto.randomUUID(),
         plasmid: p,
@@ -148,6 +157,10 @@ function App() {
         color: tracks.length === 0 ? "primary" : "neutral",
         isVisible: true,
       };
+
+      // The first file sets the initial view to match how it was drawn (FR-5); after that the
+      // user's chosen view mode is left alone.
+      if (tracks.length === 0) setViewMode(p.topology === "circular" ? "circular" : "linear");
 
       setTracks(prev => [...prev, newTrack]);
       e.target.value = "";
@@ -179,7 +192,7 @@ function App() {
           <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
             <ModeToggle />
             {tracks.length > 0 && (
-              <Button variant="outlined" color="danger" onClick={() => { setTracks([]); setError(null); }}>
+              <Button variant="outlined" color="danger" onClick={() => { setTracks([]); setError(null); setWarning(null); }}>
                 Clear All
               </Button>
             )}
@@ -191,6 +204,7 @@ function App() {
         </Box>
 
         {error && <Typography color="danger" level="body-sm">{error}</Typography>}
+        {warning && <Typography color="warning" level="body-sm">{warning}</Typography>}
 
         {tracks.length === 0 ? (
           <Sheet

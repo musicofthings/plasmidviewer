@@ -1,10 +1,11 @@
-import type { Feature } from "../models/plasmid";
+import type { Feature, Topology } from "../models/plasmid";
 
 interface CircularTrack {
     id: string;
     name: string;
     length: number;
     features: Feature[];
+    sequence: string;
 }
 
 interface CircularBackboneProps {
@@ -14,15 +15,18 @@ interface CircularBackboneProps {
     tracks: CircularTrack[];
     /** Angles are computed against this length so every ring shares one coordinate system. */
     totalLength: number;
+    /** Reference topology and GC fraction, shown in the hub (FR-12). */
+    topology?: Topology;
+    gcContent?: number;
     selectedFeatureId?: string;
-    onFeatureClick: (feature: Feature, trackName: string) => void;
+    onFeatureClick: (feature: Feature, track: CircularTrack) => void;
 }
 
 const RING_SPACING = 34;
 const FEATURE_STROKE = 9;
 
 export function CircularBackbone({
-    radius, cx, cy, tracks, totalLength, selectedFeatureId, onFeatureClick,
+    radius, cx, cy, tracks, totalLength, topology, gcContent, selectedFeatureId, onFeatureClick,
 }: CircularBackboneProps) {
     const pointAt = (bp: number, r: number) => {
         const angle = (bp / totalLength) * 2 * Math.PI - Math.PI / 2; // 0 bp at 12 o'clock
@@ -64,7 +68,7 @@ export function CircularBackbone({
                             return (
                                 <g
                                     key={f.id}
-                                    onClick={() => onFeatureClick(f, track.name)}
+                                    onClick={() => onFeatureClick(f, track)}
                                     style={{ cursor: 'pointer' }}
                                 >
                                     <path
@@ -97,9 +101,29 @@ export function CircularBackbone({
                 );
             })}
 
+            {/* Origin marker: a tick at 12 o'clock (base 1) so orientation is unambiguous (FR-12). */}
+            <line
+                x1={cx}
+                y1={cy - radius - 4}
+                x2={cx}
+                y2={cy - radius - 18}
+                stroke="var(--joy-palette-text-secondary)"
+                strokeWidth={2}
+            />
             <text
                 x={cx}
-                y={cy - 8}
+                y={cy - radius - 23}
+                textAnchor="middle"
+                fontSize="11"
+                fontWeight="600"
+                fill="var(--joy-palette-text-secondary)"
+            >
+                1
+            </text>
+
+            <text
+                x={cx}
+                y={cy - 14}
                 textAnchor="middle"
                 fontSize="15"
                 fontWeight="bold"
@@ -109,17 +133,28 @@ export function CircularBackbone({
             </text>
             <text
                 x={cx}
-                y={cy + 12}
+                y={cy + 6}
                 textAnchor="middle"
                 fontSize="12"
                 fill="var(--joy-palette-text-tertiary)"
             >
-                {`${totalLength} bp`}
+                {`${totalLength} bp${topology ? ` · ${topology}` : ""}`}
             </text>
+            {gcContent !== undefined && (
+                <text
+                    x={cx}
+                    y={cy + 24}
+                    textAnchor="middle"
+                    fontSize="12"
+                    fill="var(--joy-palette-text-tertiary)"
+                >
+                    {`GC ${(gcContent * 100).toFixed(1)}%`}
+                </text>
+            )}
             {tracks.length > 1 && (
                 <text
                     x={cx}
-                    y={cy + 30}
+                    y={cy + 42}
                     textAnchor="middle"
                     fontSize="11"
                     fill="var(--joy-palette-text-tertiary)"
