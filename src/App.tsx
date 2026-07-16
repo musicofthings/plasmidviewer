@@ -11,7 +11,11 @@ import { parseFasta } from "./parsers/fasta";
 import { parseSnapGene } from "./parsers/snapgene";
 import { parseGenBank } from "./parsers/genbank";
 import { PlasmidViewer } from "./components/PlasmidViewer";
+import { LibrarySidebar } from "./components/LibrarySidebar";
 import type { Track } from "./state/viewerState";
+import { useLibrary } from "./state/useLibrary";
+import type { NodeLevel, SequenceRecord } from "./models/library";
+import { nodePath } from "./utils/libraryTree";
 import { loadSession, saveSession, clearSession } from "./utils/persistence";
 import { findNonStandardBases, describeNonStandardBases } from "./utils/sequence";
 
@@ -94,6 +98,13 @@ function App() {
   // would overwrite the very session we are about to load (FR-26).
   const [restored, setRestored] = useState(false);
 
+  const library = useLibrary();
+  // The library sequence shown in the viewer (highlighted in the tree), and the tree node
+  // selected as the target for "Save to Library".
+  const [openSequenceId, setOpenSequenceId] = useState<string | undefined>(undefined);
+  const [selectedNode, setSelectedNode] = useState<{ level: NodeLevel; id: string } | null>(null);
+  const [sourceName, setSourceName] = useState<string | undefined>(undefined);
+
   useEffect(() => {
     let cancelled = false;
 
@@ -102,6 +113,7 @@ function App() {
         if (cancelled || !session) return;
         setTracks(session.tracks);
         setViewMode(session.viewMode);
+        setOpenSequenceId(session.openSequenceId);
       })
       .catch(() => {
         // A session we cannot read is not worth an error banner — the app simply opens empty.
@@ -119,12 +131,37 @@ function App() {
     const timer = setTimeout(() => {
       const write = tracks.length === 0
         ? clearSession()
-        : saveSession({ tracks, viewMode });
+        : saveSession({ tracks, viewMode, openSequenceId });
       write.catch(() => setError("Could not save this session for next time"));
     }, SAVE_DEBOUNCE_MS);
 
     return () => clearTimeout(timer);
-  }, [tracks, viewMode, restored]);
+  }, [tracks, viewMode, openSequenceId, restored]);
+
+  // Keep the tree selection consistent with what still exists after a delete.
+  useEffect(() => {
+    if (!library.loaded) return;
+    if (openSequenceId && !library.data.sequences.some(s => s.id === openSequenceId)) {
+      setOpenSequenceId(undefined);
+    }
+    if (selectedNode) {
+      const stores = [library.data.workspaces, library.data.projects, library.data.experiments,
+        library.data.samples, library.data.sequences];
+      if (!stores.some(list => list.some(n => n.id === selectedNode.id))) setSelectedNode(null);
+    }
+  }, [library.loaded, library.data, openSequenceId, selectedNode]);
+
+  const loadPlasmid = (p: Plasmid, append: boolean) => {
+    const newTrack: Track = {
+      id: crypto.randomUUID(),
+      plasmid: p,
+      offsetBp: 0,
+      color: !append ? "primary" : "neutral",
+      isVisible: true,
+    };
+    if (!append) setViewMode(p.topology === "circular" ? "circular" : "linear");
+    setTracks(prev => append ? [...prev, newTrack] : [newTrack]);
+  };
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -150,91 +187,128 @@ function App() {
         setWarning(`${file.name}: contains ${nonStandard}. These are shown in grey and ignored in GC% and translation.`);
       }
 
-      const newTrack: Track = {
-        id: crypto.randomUUID(),
-        plasmid: p,
-        offsetBp: 0,
-        color: tracks.length === 0 ? "primary" : "neutral",
-        isVisible: true,
-      };
-
-      // The first file sets the initial view to match how it was drawn (FR-5); after that the
-      // user's chosen view mode is left alone.
-      if (tracks.length === 0) setViewMode(p.topology === "circular" ? "circular" : "linear");
-
-      setTracks(prev => [...prev, newTrack]);
+      const append = tracks.length > 0;
+      // A freshly uploaded construct is transient until saved; adding it clears the "open
+      // library sequence" mark so the tree highlight does not lie.
+      if (!append) { setOpenSequenceId(undefined); setSourceName(file.name); }
+      loadPlasmid(p, append);
       e.target.value = "";
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to parse file");
     }
   };
 
+  const openSequence = (seq: SequenceRecord) => {
+    setError(null);
+    setWarning(null);
+    setSourceName(seq.sourceName);
+    setOpenSequenceId(seq.id);
+    loadPlasmid(seq.plasmid, false);
+  };
+
+  const saveTargetSampleId = selectedNode?.level === "sample" ? selectedNode.id : null;
+
+  const handleSaveToLibrary = async () => {
+    if (!saveTargetSampleId || tracks.length === 0) return;
+    const plasmid = tracks[0].plasmid;
+    try {
+      const seq = await library.saveSequence(saveTargetSampleId, plasmid.name, plasmid, sourceName);
+      setOpenSequenceId(seq.id);
+      const sampleName = library.data.samples.find(s => s.id === saveTargetSampleId)?.name ?? "sample";
+      setWarning(`Saved “${plasmid.name}” to ${sampleName}.`);
+    } catch {
+      setError("Could not save this sequence to the library");
+    }
+  };
+
+  const breadcrumb = openSequenceId
+    ? nodePath(library.data, "sequence", openSequenceId).map(p => p.node.name).join(" / ")
+    : null;
+
   return (
     <CssVarsProvider theme={theme} defaultMode="light" modeStorageKey="plasmidviewer-mode">
       <CssBaseline />
-      <Box sx={{
-        p: 2,
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 2,
-        minHeight: '100vh',
-        bgcolor: 'background.body',
-      }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Box>
-            <Typography level="h3" component="h1" sx={{ fontWeight: 800 }}>
-              Plasmid Viewer
-            </Typography>
-            <Typography level="body-sm" sx={{ color: 'neutral.500' }}>
-              Multi-Track Alignment &amp; Visualization
-            </Typography>
-          </Box>
-          <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-            <ModeToggle />
-            {tracks.length > 0 && (
-              <Button variant="outlined" color="danger" onClick={() => { setTracks([]); setError(null); setWarning(null); }}>
-                Clear All
-              </Button>
-            )}
-            <Button component="label" variant="solid" color="primary">
-              {tracks.length === 0 ? "Open File" : "Add Track"}
-              <input type="file" hidden onChange={handleFileUpload} accept=".fasta,.fa,.txt,.dna,.gb,.gbk" />
-            </Button>
-          </Box>
+      <Box sx={{ display: 'flex', height: '100vh', bgcolor: 'background.body' }}>
+        <Box sx={{ width: 300, flexShrink: 0, height: '100%', bgcolor: 'background.surface', borderRight: '1px solid', borderColor: 'divider' }}>
+          <LibrarySidebar
+            library={library}
+            openSequenceId={openSequenceId}
+            selectedNode={selectedNode}
+            onSelectNode={(level, id) => setSelectedNode({ level, id })}
+            onOpenSequence={openSequence}
+          />
         </Box>
 
-        {error && <Typography color="danger" level="body-sm">{error}</Typography>}
-        {warning && <Typography color="warning" level="body-sm">{warning}</Typography>}
+        <Box sx={{ flex: 1, minWidth: 0, overflow: 'auto', p: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 2 }}>
+            <Box sx={{ minWidth: 0 }}>
+              <Typography level="h3" component="h1" sx={{ fontWeight: 800 }}>
+                Plasmid Viewer
+              </Typography>
+              <Typography level="body-sm" sx={{ color: 'neutral.500', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                {breadcrumb ?? "Multi-Track Alignment & Visualization"}
+              </Typography>
+            </Box>
+            <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', flexShrink: 0 }}>
+              <ModeToggle />
+              <Button
+                variant="outlined"
+                color="primary"
+                disabled={tracks.length === 0 || !saveTargetSampleId}
+                onClick={handleSaveToLibrary}
+                title={saveTargetSampleId
+                  ? "Save the reference sequence into the selected sample"
+                  : "Select a sample in the library first"}
+              >
+                Save to Library
+              </Button>
+              {tracks.length > 0 && (
+                <Button variant="outlined" color="danger" onClick={() => { setTracks([]); setError(null); setWarning(null); setOpenSequenceId(undefined); }}>
+                  Clear All
+                </Button>
+              )}
+              <Button component="label" variant="solid" color="primary">
+                {tracks.length === 0 ? "Open File" : "Add Track"}
+                <input type="file" hidden onChange={handleFileUpload} accept=".fasta,.fa,.txt,.dna,.gb,.gbk" />
+              </Button>
+            </Box>
+          </Box>
 
-        {tracks.length === 0 ? (
-          <Sheet
-            variant="outlined"
-            sx={{
-              p: 10,
-              borderRadius: 'md',
-              textAlign: 'center',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              gap: 2,
-              borderStyle: 'dashed',
-            }}
-          >
-            <Typography level="h4">Upload Plasmid Map</Typography>
-            <Typography level="body-md">Support for FASTA, GenBank, and SnapGene</Typography>
-            <Button component="label" size="lg" sx={{ mt: 2 }}>
-              Select File
-              <input type="file" hidden onChange={handleFileUpload} accept=".fasta,.fa,.txt,.dna,.gb,.gbk" />
-            </Button>
-          </Sheet>
-        ) : (
-          <PlasmidViewer
-            tracks={tracks}
-            setTracks={setTracks}
-            viewMode={viewMode}
-            setViewMode={setViewMode}
-          />
-        )}
+          {error && <Typography color="danger" level="body-sm">{error}</Typography>}
+          {warning && <Typography color="warning" level="body-sm">{warning}</Typography>}
+
+          {tracks.length === 0 ? (
+            <Sheet
+              variant="outlined"
+              sx={{
+                p: 10,
+                borderRadius: 'md',
+                textAlign: 'center',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: 2,
+                borderStyle: 'dashed',
+              }}
+            >
+              <Typography level="h4">Open a sequence</Typography>
+              <Typography level="body-md">
+                Pick a sequence from the library on the left, or upload a FASTA, GenBank, or SnapGene file.
+              </Typography>
+              <Button component="label" size="lg" sx={{ mt: 2 }}>
+                Select File
+                <input type="file" hidden onChange={handleFileUpload} accept=".fasta,.fa,.txt,.dna,.gb,.gbk" />
+              </Button>
+            </Sheet>
+          ) : (
+            <PlasmidViewer
+              tracks={tracks}
+              setTracks={setTracks}
+              viewMode={viewMode}
+              setViewMode={setViewMode}
+            />
+          )}
+        </Box>
       </Box>
     </CssVarsProvider>
   );

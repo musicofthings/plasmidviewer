@@ -77,8 +77,14 @@ convention at the boundary; no other convention may leak past `parsers/`.
 
 | Module | Responsibility | State |
 |---|---|---|
-| `App.tsx` | File upload, `Track[]` state, theme, empty state | live |
+| `App.tsx` | Two-pane shell: library sidebar + viewer; upload, `Track[]` state, open/save sequence, theme | live |
 | `components/PlasmidViewer.tsx` | Orchestrates linear/circular, zoom, export, per-track drag/align | live |
+| `components/LibrarySidebar.tsx` | Workspace→…→sequence tree: create/rename/reorder/delete + open sequence (FR-30) | live |
+| `state/useLibrary.ts` | Loads the hierarchy from IndexedDB and exposes CRUD (reload-after-write) | live |
+| `models/library.ts` | Level types + `CHILD_LEVEL`/`STORE_NAME`/label maps | live |
+| `utils/library.ts` | IndexedDB CRUD for the hierarchy incl. cascade delete (browser-verified) | live |
+| `utils/libraryTree.ts` | Pure tree helpers over in-memory `LibraryData` (`childrenOf`, `nodePath`, `descendantIds`) | live |
+| `utils/db.ts` | Shared IndexedDB open (DB v2) + generic `withStore`, used by session + library | live |
 | `components/Backbone.tsx` | Linear backbone line | live |
 | `components/FeatureGlyph.tsx` | Strand-aware feature arrow + label | live |
 | `components/SequenceViewer.tsx` | Scrollable base-level strip, base coloring | live |
@@ -269,10 +275,28 @@ Ordered roughly by severity. Items 1–4 were the Milestone 1 (P0) set and are *
     still scroll past the map. In `SequenceTrack`, the `pxPerBp < MIN_PX_FOR_BARS` branch no
     longer returns a single "zoom in" string; it draws a labeled dashed line per enabled row
     (5′→3′, 3′→5′, frames +1/+2/+3) with a per-row `<title>` tooltip.
+18. **Data library (FR-30) — first slice of a Benchling-style hierarchy, client-side.** Five
+    IndexedDB object stores (`workspaces`…`sequences`), each keyed by `id` with a `parentId`
+    index, created in `utils/db.ts` at **DB v2** alongside the existing `session` store — both
+    must agree on the version, so all schema lives in one `onupgradeneeded`. `persistence.ts`
+    was refactored onto that shared `openDb`/`withStore`. **Design split for testability:** the
+    IndexedDB CRUD (`utils/library.ts`, incl. recursive cascade delete via the `parentId` index)
+    is browser-verified like `persistence.ts`; the *pure* tree logic (`utils/libraryTree.ts` —
+    `childrenOf`, `descendantIds`, `nodePath`, `defaultChildName`) operates on an in-memory
+    `LibraryData` snapshot and is unit-tested. `useLibrary` loads the whole hierarchy once and
+    **reloads it after every mutation** rather than patching five arrays — a single user's
+    library is small, and full reload can't drift from disk. `LibrarySidebar` renders the tree
+    with a **recursive render *function*, not a nested component**, so a rename `<Input>` keeps
+    focus across re-renders. **Deliberate behaviors:** deleting a node cascades to its subtree
+    but leaves the viewer's open working copy intact (it just unlinks `openSequenceId`); the
+    open sequence id is persisted in the session so reload restores it and the tree auto-expands
+    its path. **Still open:** no `.dna`-style DB integration tests (browser-verified only); no
+    drag-to-reorder (reorder is by nesting); a sequence lives under exactly one sample (no move
+    between samples yet); import/export of the library for backup/transfer.
 
 ## 8. Testing strategy
 
-**Vitest** (`npm test`), 86 tests in six files. Fixtures live in `src/__fixtures__/` and are
+**Vitest** (`npm test`), 92 tests in seven files. Fixtures live in `src/__fixtures__/` and are
 loaded with Vite's `?raw` import, so tests need no Node `fs` access and typecheck under the
 app tsconfig. **CI** (`.github/workflows/ci.yml`) runs `lint` → `test` → `build` on every push
 to `main` and every PR. `parsers.test.ts` also asserts topology (FR-5): `test.gb`'s LOCUS line

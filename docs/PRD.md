@@ -10,11 +10,13 @@
 
 ## 1. Summary
 
-Plasmid Viewer is a browser-based tool for **visualizing and comparing annotated DNA
-constructs**. A user opens one or more sequence files (FASTA / GenBank / SnapGene),
-sees an annotated linear or circular map, scrolls the base-level sequence, aligns
-multiple constructs as stacked tracks, and exports a publication-style PNG. Everything
-runs client-side — no upload, no account, no backend.
+Plasmid Viewer is a browser-based tool for **visualizing, comparing, and organizing
+annotated DNA constructs**. A user opens one or more sequence files (FASTA / GenBank /
+SnapGene), sees an annotated linear or circular map, scrolls the base-level sequence,
+aligns multiple constructs as stacked tracks, exports a publication-style PNG, and
+**organizes saved sequences in a Benchling-style workspace → project → experiment →
+sample → sequence library**. Everything runs client-side — no upload, no account, no
+backend; the library is stored locally in the browser (IndexedDB).
 
 The near-term product bet: give bench molecular biologists a **fast, zero-friction,
 privacy-preserving** way to eyeball a construct and compare a sequencing result or a
@@ -137,6 +139,14 @@ clinical reporting.
   into a separate array (previously dropped). Hovering any feature — linear glyph or circular
   arc — shows a cursor-following tooltip with the name, type, `start..end · N bp`, strand,
   description, and track; the same description also appears in the detail panel.
+- **Data library — Benchling-style hierarchy (FR-30):** a client-side (IndexedDB)
+  workspace → project → experiment → sample → sequence tree in a left sidebar. Create, inline-
+  rename, reorder-by-nesting, and delete (with an inline confirm and cascade) at every level;
+  each level has its own icon. Selecting a sample and hitting **Save to Library** stores the
+  open construct as a sequence under it; clicking a sequence opens it in the viewer, with a
+  breadcrumb of its path. The tree, and which sequence is open, survive reload. Consistent with
+  the non-goals, this stays **single-user, local, no backend, no accounts** — the DB is in the
+  browser only. Multi-user/cloud/sharing remain out of scope.
 - **Map-level navigation + collapsed-row hints (FR-29):** zoom/pan moved off the page toolbar
   onto the map itself — a floating zoom cluster (`− + fit`) and position readout top-right, and
   left/right scroll chevrons that appear only when there is more sequence that way. Mouse wheel
@@ -169,9 +179,15 @@ recolor (the color field exists but nothing renders per-track color yet).
 ### Non-goals (explicitly out of scope for now)
 - Sequence **editing** / construct design / cloning simulation.
 - Primer design, restriction digest simulation, ORF finding (candidate future work).
-- Accounts, cloud storage, sharing, collaboration.
-- A backend of any kind. This stays a static, client-only SPA.
+- Accounts, cloud storage, sharing, collaboration, **multi-user** anything.
+- A backend of any kind. This stays a static, client-only SPA. *(The data library added in
+  FR-30 is client-side IndexedDB — it does not change this.)*
 - Mobile-first layout (desktop-first is fine; must not be broken on tablet).
+
+> **Scope note (2026-07-16):** organizing saved constructs into a workspace/project/experiment/
+> sample/sequence hierarchy is now **in scope** (FR-30), reversing the original "just a viewer"
+> framing — but only as a *local, single-user* library. The no-backend / no-accounts / no-cloud
+> non-goals above are unchanged.
 
 ## 6. Functional requirements
 
