@@ -4,9 +4,11 @@ import { featureColor } from "../utils/featureStyle";
 interface CircularTrack {
     id: string;
     name: string;
-    length: number;
     features: Feature[];
     sequence: string;
+    /** Shift of this track relative to the reference, in base pairs — the same value the
+     *  linear map applies, so the two views place a feature at the same coordinate. */
+    offsetBp: number;
 }
 
 interface CircularBackboneProps {
@@ -68,6 +70,11 @@ export function CircularBackbone({
                             // + strand rides just outside its ring, − strand just inside.
                             const r = ringRadius + (f.strand === "+" ? 7 : -7);
                             const spanBp = f.end - f.start + 1;
+                            // Angles are measured in reference space, so an aligned track's
+                            // features carry their offset here exactly as they do on the
+                            // linear map.
+                            const startBp = f.start + track.offsetBp;
+                            const endBp = f.end + track.offsetBp;
 
                             return (
                                 <g
@@ -80,7 +87,7 @@ export function CircularBackbone({
                                 >
                                     <path
                                         id={`arc-${f.id}`}
-                                        d={arc(f.start, f.end, r)}
+                                        d={arc(startBp, endBp, r)}
                                         stroke={featureColor(f)}
                                         strokeWidth={selected ? FEATURE_STROKE + 4 : FEATURE_STROKE}
                                         fill="none"

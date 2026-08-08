@@ -14,5 +14,3 @@ export interface Track {
     color: string;
     isVisible: boolean;
 }
-
-export const DEFAULT_WINDOW_BP = 500;

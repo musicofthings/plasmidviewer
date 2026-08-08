@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import type { LibraryNode, SequenceRecord } from "../models/library";
-import { childrenOf, descendantIds, nodePath, defaultChildName, type LibraryData } from "./libraryTree";
+import { childrenOf, nodePath, defaultChildName, type LibraryData } from "./libraryTree";
 
 const node = (id: string, name: string, parentId: string | null): LibraryNode =>
     ({ id, name, parentId, createdAt: 0, updatedAt: 0 });
@@ -23,14 +23,6 @@ describe("childrenOf", () => {
     it("is empty for a leaf and for a childless parent", () => {
         expect(childrenOf(data, "sequence", "q1")).toEqual([]);
         expect(childrenOf(data, "workspace", "w2")).toEqual([]);
-    });
-});
-
-describe("descendantIds", () => {
-    it("collects every id below a node, all levels deep", () => {
-        expect(descendantIds(data, "workspace", "w1").sort()).toEqual(["e1", "p1", "q1", "s1"]);
-        expect(descendantIds(data, "sample", "s1")).toEqual(["q1"]);
-        expect(descendantIds(data, "sequence", "q1")).toEqual([]);
     });
 });
 

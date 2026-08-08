@@ -21,8 +21,8 @@ interface SequenceTrackProps {
 // than emitting thousands of sub-pixel nodes (FR-9).
 export const MIN_PX_FOR_LETTERS = 7;
 export const MIN_PX_FOR_BARS = 1.5;
-/** A codon needs about this much room before its residue letter is worth drawing. */
-const MIN_PX_FOR_RESIDUE = 4;
+/** Width of a whole codon, in px, before its residue letter is worth drawing. */
+const MIN_CODON_PX_FOR_RESIDUE = 12;
 
 export function SequenceTrack({
     plasmid, offsetBp, viewportStart, viewportEnd, pxPerBp, bpToPx, y,
@@ -199,7 +199,8 @@ function TranslationRow({
 
     const slice = plasmid.sequence.slice(frame + firstCodon * 3, frame + (lastCodon + 1) * 3);
     const residues = translateFrame(slice, 0);
-    const showLetters = pxPerBp * 3 >= MIN_PX_FOR_RESIDUE * 3;
+    const codonPx = 3 * pxPerBp;
+    const showLetters = codonPx >= MIN_CODON_PX_FOR_RESIDUE;
 
     return (
         <g>
@@ -207,7 +208,7 @@ function TranslationRow({
                 // Back to this track's 1-based coordinates, then into reference space.
                 const codonStartBp = frame + (firstCodon + i) * 3 + 1;
                 const x = bpToPx(codonStartBp + offsetBp);
-                const width = 3 * pxPerBp;
+                const width = codonPx;
                 const isStop = residue.aa === "*";
                 const isStart = residue.aa === "M";
 
@@ -227,7 +228,7 @@ function TranslationRow({
                         >
                             <title>{`${residue.aa} · frame ${frame + 1} · ${codonStartBp}..${codonStartBp + 2}`}</title>
                         </rect>
-                        {showLetters && width >= 7 && (
+                        {showLetters && (
                             <text
                                 x={x + width / 2}
                                 y={y + SEQ_ROW_HEIGHT / 2}

@@ -27,7 +27,7 @@ import { alignSequences, calculateOffset, type Mismatch } from "../utils/alignme
 import { gcContent } from "../utils/sequence";
 import {
     assignLanes, laneCount, cullToViewport, stackTracks, glyphY, sequenceRowCount,
-    bpToLocalPx, GLYPH_HEIGHT, TRACK_HEADER_HEIGHT,
+    bpToLocalPx, GLYPH_HEIGHT, TRACK_HEADER_HEIGHT, type LaidOutFeature,
 } from "../utils/layout";
 import { exportPng, exportSvg } from "../utils/export";
 
@@ -73,11 +73,14 @@ export function PlasmidViewer({ tracks, setTracks, viewMode, setViewMode }: Plas
         return () => observer.disconnect();
     }, []);
 
-    // A new reference (or a cleared session) invalidates the old viewport.
+    // A new reference (or a cleared session) invalidates the old viewport. Keyed on the track's
+    // identity, not on its name or length: the name is an editable display field, so keying on
+    // it would snap the map back to full view on every keystroke of a rename.
     useEffect(() => {
         setViewport({ start: 1, end: plasmid.length });
         setSelection(null);
-    }, [plasmid.length, plasmid.name]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [referenceTrack.id]);
 
     const spanBp = Math.max(1, viewport.end - viewport.start + 1);
     const pxPerBp = containerWidth / spanBp;
@@ -194,21 +197,44 @@ export function PlasmidViewer({ tracks, setTracks, viewMode, setViewMode }: Plas
         return () => svg.removeEventListener("wheel", onWheel);
     }, [viewMode, viewport.start, viewport.end, spanBp, containerWidth, plasmid.length, setSpan, panByPx]);
 
+    // Dragging a track's alignment rewrites `tracks` on every pointer move, so anything memoized
+    // on the track objects is recomputed each frame. Neither the diff nor the lane packing
+    // depends on `offsetBp`, and a track's sequence and features are fixed for its lifetime
+    // (loading a different file makes a *new* track), so both are cached on the inputs that
+    // actually matter. Rebuilding the cache each pass prunes entries for removed tracks.
+    const diffCache = useRef(new Map<string, Mismatch[]>());
     const mismatchesByTrackId = useMemo(() => {
         const map = new Map<string, Mismatch[]>();
+        const cache = new Map<string, Mismatch[]>();
+
         for (const track of tracks.slice(1)) {
-            map.set(track.id, alignSequences(plasmid.sequence, track.plasmid.sequence));
+            const key = `${referenceTrack.id} ${track.id}`;
+            const mismatches = diffCache.current.get(key)
+                ?? alignSequences(plasmid.sequence, track.plasmid.sequence);
+            cache.set(key, mismatches);
+            map.set(track.id, mismatches);
         }
+
+        diffCache.current = cache;
         return map;
-    }, [tracks, plasmid.sequence]);
+    }, [tracks, plasmid.sequence, referenceTrack.id]);
 
     // Lanes are assigned over *all* features in track-local pixels, so they depend on the zoom
     // but not on where the viewport sits — panning cannot make a feature hop lanes (FR-9).
+    const layoutCache = useRef(new Map<string, LaidOutFeature[]>());
     const layoutByTrackId = useMemo(() => {
-        const map = new Map<string, ReturnType<typeof assignLanes>>();
+        const map = new Map<string, LaidOutFeature[]>();
+        const cache = new Map<string, LaidOutFeature[]>();
+
         for (const track of tracks) {
-            map.set(track.id, assignLanes(track.plasmid.features, pxPerBp, track.plasmid.length));
+            const key = `${track.id} ${pxPerBp}`;
+            const laidOut = layoutCache.current.get(key)
+                ?? assignLanes(track.plasmid.features, pxPerBp, track.plasmid.length);
+            cache.set(key, laidOut);
+            map.set(track.id, laidOut);
         }
+
+        layoutCache.current = cache;
         return map;
     }, [tracks, pxPerBp]);
 
@@ -348,9 +374,11 @@ export function PlasmidViewer({ tracks, setTracks, viewMode, setViewMode }: Plas
                 next[trackIndex] = { ...next[trackIndex], offsetBp };
                 return next;
             });
-            e.target.value = "";
         } catch (err) {
             setError(err instanceof Error ? err.message : "Failed to align track");
+        } finally {
+            // Always clear the picker, so re-selecting the same file after an error still fires.
+            e.target.value = "";
         }
     };
 
@@ -629,9 +657,9 @@ export function PlasmidViewer({ tracks, setTracks, viewMode, setViewMode }: Plas
                                 tracks={visibleTracks.map(t => ({
                                     id: t.id,
                                     name: t.plasmid.name,
-                                    length: t.plasmid.length,
                                     features: t.plasmid.features,
                                     sequence: t.plasmid.sequence,
+                                    offsetBp: t.offsetBp,
                                 }))}
                             />
                         </svg>

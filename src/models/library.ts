@@ -29,14 +29,6 @@ export const CHILD_LEVEL: Record<NodeLevel, NodeLevel | null> = {
     sequence: null,
 };
 
-export const PARENT_LEVEL: Record<NodeLevel, NodeLevel | null> = {
-    workspace: null,
-    project: "workspace",
-    experiment: "project",
-    sample: "experiment",
-    sequence: "sample",
-};
-
 export const LEVEL_LABEL: Record<NodeLevel, string> = {
     workspace: "Workspace",
     project: "Project",

@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { parseGenBank } from "./genbank";
-import { parseFasta } from "./fasta";
+import { parseFasta, parseFastaRecords } from "./fasta";
 import { featureFromTeselagen, describeFeature, type TeselagenFeature } from "./teselagen";
 import genbankFixture from "../__fixtures__/test.gb?raw";
 import fastaFixture from "../__fixtures__/test.fasta?raw";
@@ -122,5 +122,37 @@ describe("parseFasta", () => {
         const plasmid = parseFasta(">x\nacgt 123\nac-gt\n");
         expect(plasmid.sequence).toBe("ACGTACGT");
         expect(plasmid.length).toBe(8);
+    });
+
+    // Concatenating records would silently produce a construct that does not exist, and every
+    // coordinate derived from it would be wrong without any warning.
+    it("takes only the first record of a multi-record file", () => {
+        const plasmid = parseFasta(">recA\nAAAA\n>recB\nGGGG\n");
+        expect(plasmid.name).toBe("recA");
+        expect(plasmid.sequence).toBe("AAAA");
+        expect(plasmid.length).toBe(4);
+    });
+
+    it("reads a headerless sequence", () => {
+        expect(parseFasta("ACGT\nACGT\n").sequence).toBe("ACGTACGT");
+    });
+
+    it("returns an empty plasmid for empty input", () => {
+        expect(parseFasta("").length).toBe(0);
+    });
+});
+
+describe("parseFastaRecords", () => {
+    it("splits every record out, so a caller can tell the user what was dropped", () => {
+        const records = parseFastaRecords(">recA desc\nAAAA\nCCCC\n\n>recB\nGGGG\n");
+        expect(records).toEqual([
+            { name: "recA desc", sequence: "AAAACCCC" },
+            { name: "recB", sequence: "GGGG" },
+        ]);
+    });
+
+    it("returns nothing for input with no bases", () => {
+        expect(parseFastaRecords("")).toEqual([]);
+        expect(parseFastaRecords("\n  \n")).toEqual([]);
     });
 });

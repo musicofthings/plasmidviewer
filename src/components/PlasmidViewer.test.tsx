@@ -18,13 +18,13 @@ function track(id: string, p: Plasmid, offsetBp = 0): Track {
     return { id, plasmid: p, offsetBp, color: id === "ref" ? "primary" : "neutral", isVisible: true };
 }
 
-function render(tracks: Track[]) {
+function render(tracks: Track[], viewMode: "linear" | "circular" = "linear") {
     return renderToString(
         <CssVarsProvider>
             <PlasmidViewer
                 tracks={tracks}
                 setTracks={() => {}}
-                viewMode="linear"
+                viewMode={viewMode}
                 setViewMode={() => {}}
             />
         </CssVarsProvider>
@@ -104,5 +104,18 @@ describe("PlasmidViewer geometry", () => {
         const html = render([reference, track("t2", plasmid("Second", 100))]);
         expect(html).toContain("Reference");
         expect(html).toContain("Second");
+    });
+
+    it("applies a track's offset in circular view too, so both views agree", () => {
+        const shifted = plasmid("Shifted", 100, [
+            { id: "f2", name: "GeneB", type: "CDS", start: 1, end: 30, strand: "+" },
+        ]);
+        const html = render([reference, track("t2", shifted, 25)], "circular");
+
+        // Ring 1 sits at radius 270 - 34 = 236 and a + strand feature rides 7 px outside it,
+        // so r = 243 around the centre at (320, 320). With a +25 bp offset the arc starts at
+        // reference base 26 — a quarter turn from the 12 o'clock origin, i.e. due east at
+        // x = 320 + 243. Ignoring the offset (the original bug) would start it at 12 o'clock.
+        expect(html).toContain("M 563 320");
     });
 });

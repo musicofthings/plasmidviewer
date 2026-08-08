@@ -10,7 +10,7 @@ const CATEGORY_ORDER: FeatureCategory[] = [
     "cds", "promoter", "terminator", "marker", "origin", "primer", "ltr", "misc",
 ];
 
-// Colors live in index.css as --feat-* custom properties with light and dark values, so the
+// Colors live in featureColors.css as --feat-* custom properties with light and dark values, so the
 // theme toggle and the SVG export both resolve them correctly.
 export const CATEGORY_VAR: Record<FeatureCategory, string> = {
     cds: "--feat-cds",

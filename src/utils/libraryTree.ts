@@ -38,21 +38,6 @@ export function byName(a: LibraryNode, b: LibraryNode): number {
     return a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: "base" });
 }
 
-/** Every descendant id of a node (all levels below it), for cascade delete. */
-export function descendantIds(data: LibraryData, level: NodeLevel, id: string): string[] {
-    const out: string[] = [];
-    const walk = (lvl: NodeLevel, parentId: string) => {
-        const childLevel = CHILD_LEVEL[lvl];
-        if (!childLevel) return;
-        for (const child of nodesAtLevel(data, childLevel).filter(n => n.parentId === parentId)) {
-            out.push(child.id);
-            walk(childLevel, child.id);
-        }
-    };
-    walk(level, id);
-    return out;
-}
-
 /** A node's ancestor chain from the root down to (and including) the node, for breadcrumbs. */
 export function nodePath(
     data: LibraryData, level: NodeLevel, id: string,

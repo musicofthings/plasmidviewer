@@ -7,7 +7,7 @@ import Button from "@mui/joy/Button";
 import IconButton from "@mui/joy/IconButton";
 import Sheet from "@mui/joy/Sheet";
 import type { Plasmid } from "./models/plasmid";
-import { parseFasta } from "./parsers/fasta";
+import { parseFastaRecords, plasmidFromFastaRecord } from "./parsers/fasta";
 import { parseSnapGene } from "./parsers/snapgene";
 import { parseGenBank } from "./parsers/genbank";
 import { PlasmidViewer } from "./components/PlasmidViewer";
@@ -171,30 +171,39 @@ function App() {
     setWarning(null);
     try {
       let p: Plasmid;
+      // Anything the file made us drop or truncate, told to the user rather than swallowed.
+      const notices: string[] = [];
       const lowerName = file.name.toLowerCase();
       if (lowerName.endsWith(".dna")) {
         p = await parseSnapGene(file);
       } else if (lowerName.endsWith(".gb") || lowerName.endsWith(".gbk")) {
         p = await parseGenBank(file);
       } else {
-        p = parseFasta(await file.text());
+        const records = parseFastaRecords(await file.text());
+        p = plasmidFromFastaRecord(records[0] ?? { name: file.name, sequence: "" });
+        if (records.length > 1) {
+          notices.push(`holds ${records.length} records; showing the first (“${p.name}”)`);
+        }
       }
 
       if (p.length === 0) throw new Error(`${file.name} contains no sequence`);
 
       const nonStandard = describeNonStandardBases(findNonStandardBases(p.sequence));
       if (nonStandard) {
-        setWarning(`${file.name}: contains ${nonStandard}. These are shown in grey and ignored in GC% and translation.`);
+        notices.push(`contains ${nonStandard}, shown in grey and ignored in GC% and translation`);
       }
+      if (notices.length > 0) setWarning(`${file.name}: ${notices.join(". ")}.`);
 
       const append = tracks.length > 0;
       // A freshly uploaded construct is transient until saved; adding it clears the "open
       // library sequence" mark so the tree highlight does not lie.
       if (!append) { setOpenSequenceId(undefined); setSourceName(file.name); }
       loadPlasmid(p, append);
-      e.target.value = "";
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to parse file");
+    } finally {
+      // Always clear the picker, so re-selecting the same file after an error still fires.
+      e.target.value = "";
     }
   };
 
