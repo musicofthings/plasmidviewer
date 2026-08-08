@@ -58,6 +58,25 @@ npm run lint     # eslint
 npm run build    # tsc -b && vite build
 ```
 
+Regenerating the restriction-enzyme dataset from REBASE (rarely needed — it is committed):
+
+```bash
+node scripts/build-enzymes.mjs
+```
+
+## Restriction enzyme data
+
+Enzyme recognition sites, cut positions, suppliers and cognate methylation come from
+**REBASE**, The Restriction Enzyme Database — <http://rebase.neb.com> — copyright
+© Dr. Richard J. Roberts, all rights reserved. Please cite:
+
+> Roberts, R.J., Vincze, T., Posfai, J., Macelis, D. *REBASE: a database for DNA restriction
+> and modification: enzymes, genes and genomes.* Nucleic Acids Research.
+
+Only the 722 enzymes whose cut position is **known** are included. REBASE lists a further
+~350 putative enzymes whose recognition site is predicted but whose cut position is not;
+including them would let the map draw cut marks that do not correspond to a real cut.
+
 ## Coordinates
 
 One convention, enforced at the parser boundary: **1-based, inclusive at both ends**.

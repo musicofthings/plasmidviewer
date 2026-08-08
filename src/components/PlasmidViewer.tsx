@@ -23,7 +23,10 @@ import { FeatureTooltip, type HoverState } from "./FeatureTooltip";
 import { FeatureLegend } from "./FeatureLegend";
 import { SearchPanel } from "./SearchPanel";
 import { SearchHighlights } from "./SearchHighlights";
+import { EnzymePanel } from "./EnzymePanel";
+import { EnzymeCuts, CUT_BAND_HEIGHT } from "./EnzymeCuts";
 import type { SearchHit } from "../utils/search";
+import type { CutSite } from "../models/enzyme";
 import { categoriesPresent } from "../utils/featureStyle";
 import { parseFasta } from "../parsers/fasta";
 import { alignSequences, calculateOffset, type Mismatch } from "../utils/alignment";
@@ -62,6 +65,7 @@ export function PlasmidViewer({ tracks, setTracks, viewMode, setViewMode }: Plas
     const [showTranslation, setShowTranslation] = useState(false);
     const [searchHits, setSearchHits] = useState<SearchHit[]>([]);
     const [activeHit, setActiveHit] = useState(0);
+    const [cutSites, setCutSites] = useState<CutSite[]>([]);
 
     const containerRef = useRef<HTMLDivElement>(null);
     const linearSvgRef = useRef<SVGSVGElement>(null);
@@ -250,6 +254,9 @@ export function PlasmidViewer({ tracks, setTracks, viewMode, setViewMode }: Plas
         () => categoriesPresent(visibleTracks.flatMap(t => t.plasmid.features)),
         [visibleTracks],
     );
+
+    // Cut marks need room above the ruler, but only once some enzyme is actually shown.
+    const cutBand = cutSites.length > 0 ? CUT_BAND_HEIGHT : 0;
 
     const seqRows = sequenceRowCount(showComplement, showTranslation);
     const { boxes, totalHeight } = useMemo(() => stackTracks(
@@ -495,6 +502,8 @@ export function PlasmidViewer({ tracks, setTracks, viewMode, setViewMode }: Plas
                 onActivate={handleActivateHit}
             />
 
+            <EnzymePanel plasmid={plasmid} onCutsChange={setCutSites} />
+
             <TrackPanel tracks={tracks} setTracks={setTracks} />
 
             <DetailPanel
@@ -514,8 +523,8 @@ export function PlasmidViewer({ tracks, setTracks, viewMode, setViewMode }: Plas
                         <svg
                             ref={linearSvgRef}
                             width={containerWidth}
-                            height={totalHeight}
-                            viewBox={`0 0 ${containerWidth} ${totalHeight}`}
+                            height={totalHeight + cutBand}
+                            viewBox={`0 0 ${containerWidth} ${totalHeight + cutBand}`}
                             style={{ display: 'block', cursor: 'grab', outline: 'none', touchAction: 'none' }}
                             tabIndex={0}
                             role="application"
@@ -523,6 +532,17 @@ export function PlasmidViewer({ tracks, setTracks, viewMode, setViewMode }: Plas
                             onKeyDown={handleKeyDown}
                             onPointerDown={startPanDrag}
                         >
+                            <EnzymeCuts
+                                cuts={cutSites}
+                                bpToPx={bpToPx}
+                                viewportStart={viewport.start}
+                                viewportEnd={viewport.end}
+                                mapHeight={totalHeight}
+                            />
+
+                            {/* Everything below the cut band is shifted as a unit, so the band
+                                costs no coordinate changes anywhere else in the map. */}
+                            <g transform={cutBand ? `translate(0, ${cutBand})` : undefined}>
                             {/* First child, so hits sit *under* the glyphs and bases they mark. */}
                             <SearchHighlights
                                 hits={searchHits}
@@ -631,6 +651,7 @@ export function PlasmidViewer({ tracks, setTracks, viewMode, setViewMode }: Plas
                                     </g>
                                 );
                             })}
+                            </g>
                         </svg>
 
                         {/* Zoom + position readout, floated over the map itself rather than the page toolbar. */}
