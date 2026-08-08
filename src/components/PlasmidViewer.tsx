@@ -29,7 +29,8 @@ import {
     assignLanes, laneCount, cullToViewport, stackTracks, glyphY, sequenceRowCount,
     bpToLocalPx, GLYPH_HEIGHT, TRACK_HEADER_HEIGHT, type LaidOutFeature,
 } from "../utils/layout";
-import { exportPng, exportSvg } from "../utils/export";
+import { exportPng, exportSvg, downloadText } from "../utils/export";
+import { toGenBank, toFasta } from "../parsers/serialize";
 
 interface PlasmidViewerProps {
     tracks: Track[];
@@ -359,6 +360,21 @@ export function PlasmidViewer({ tracks, setTracks, viewMode, setViewMode }: Plas
         }
     };
 
+    // Sequence export writes the *reference* construct, matching "Save to Library" (FR-35).
+    const handleSequenceExport = (format: "gb" | "fasta") => {
+        setError(null);
+        try {
+            const stem = plasmid.name.replace(/\s+/g, "_") || "sequence";
+            if (format === "gb") {
+                downloadText(toGenBank(plasmid), `${stem}.gb`, "chemical/seq-na-genbank");
+            } else {
+                downloadText(toFasta(plasmid), `${stem}.fasta`, "text/x-fasta");
+            }
+        } catch (err) {
+            setError(err instanceof Error ? `Export failed: ${err.message}` : "Export failed");
+        }
+    };
+
     const handleTrackAlign = async (e: React.ChangeEvent<HTMLInputElement>, trackIndex: number) => {
         const file = e.target.files?.[0];
         if (!file) return;
@@ -426,6 +442,23 @@ export function PlasmidViewer({ tracks, setTracks, viewMode, setViewMode }: Plas
                     </Select>
                     <Button onClick={() => handleExport("png")} variant="solid" color="primary" loading={exporting}>Export PNG</Button>
                     <Button onClick={() => handleExport("svg")} variant="outlined" color="primary" loading={exporting}>Export SVG</Button>
+
+                    {/* Sequence export, kept visually apart from the image exports: these write the
+                        construct itself, so they are unaffected by the linear/circular view. */}
+                    <ButtonGroup variant="outlined">
+                        <Button
+                            onClick={() => handleSequenceExport("gb")}
+                            title={`Save ${plasmid.name} as an annotated GenBank file`}
+                        >
+                            GenBank
+                        </Button>
+                        <Button
+                            onClick={() => handleSequenceExport("fasta")}
+                            title={`Save ${plasmid.name} as FASTA (sequence only, no annotations)`}
+                        >
+                            FASTA
+                        </Button>
+                    </ButtonGroup>
                 </Box>
             </Stack>
 

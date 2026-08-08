@@ -120,6 +120,16 @@ function download(href: string, filename: string) {
     link.click();
 }
 
+/** Saves generated text (GenBank, FASTA, …) as a file (FR-35). */
+export function downloadText(text: string, filename: string, mimeType: string) {
+    const url = URL.createObjectURL(new Blob([text], { type: mimeType }));
+    try {
+        download(url, filename);
+    } finally {
+        URL.revokeObjectURL(url);
+    }
+}
+
 export async function exportSvg(source: SVGSVGElement, filename: string, options: SvgExportOptions) {
     const markup = await buildStandaloneSvg(source, options);
     const url = URL.createObjectURL(new Blob([markup], { type: "image/svg+xml" }));
