@@ -21,6 +21,9 @@ import { DetailPanel, type Selection } from "./DetailPanel";
 import { TrackPanel } from "./TrackPanel";
 import { FeatureTooltip, type HoverState } from "./FeatureTooltip";
 import { FeatureLegend } from "./FeatureLegend";
+import { SearchPanel } from "./SearchPanel";
+import { SearchHighlights } from "./SearchHighlights";
+import type { SearchHit } from "../utils/search";
 import { categoriesPresent } from "../utils/featureStyle";
 import { parseFasta } from "../parsers/fasta";
 import { alignSequences, calculateOffset, type Mismatch } from "../utils/alignment";
@@ -57,6 +60,8 @@ export function PlasmidViewer({ tracks, setTracks, viewMode, setViewMode }: Plas
     const [exporting, setExporting] = useState(false);
     const [showComplement, setShowComplement] = useState(false);
     const [showTranslation, setShowTranslation] = useState(false);
+    const [searchHits, setSearchHits] = useState<SearchHit[]>([]);
+    const [activeHit, setActiveHit] = useState(0);
 
     const containerRef = useRef<HTMLDivElement>(null);
     const linearSvgRef = useRef<SVGSVGElement>(null);
@@ -313,6 +318,25 @@ export function PlasmidViewer({ tracks, setTracks, viewMode, setViewMode }: Plas
         reveal(target.refStart, target.refEnd);
     }, [navigableFeatures, selectedFeatureId, reveal, setViewMode, featureSelection]);
 
+    // Search hits live in reference coordinates, so they reveal exactly like a feature does.
+    // A hit that crosses the origin has start > end; frame the tail rather than a negative span.
+    const revealHit = useCallback((hit: SearchHit) => {
+        setViewMode("linear");
+        reveal(hit.start, hit.wraps ? plasmid.length : hit.end);
+    }, [reveal, setViewMode, plasmid.length]);
+
+    const handleSearchResults = useCallback((hits: SearchHit[]) => {
+        setSearchHits(hits);
+        setActiveHit(0);
+        if (hits.length > 0) revealHit(hits[0]);
+    }, [revealHit]);
+
+    const handleActivateHit = useCallback((index: number) => {
+        setActiveHit(index);
+        const hit = searchHits[index];
+        if (hit) revealHit(hit);
+    }, [searchHits, revealHit]);
+
     // FR-25. The map is a focusable widget: arrows pan, +/- zoom, n/p walk the features.
     const handleKeyDown = (e: React.KeyboardEvent) => {
         const step = Math.max(1, Math.round(spanBp * (e.shiftKey ? 0.5 : 0.1)));
@@ -464,6 +488,13 @@ export function PlasmidViewer({ tracks, setTracks, viewMode, setViewMode }: Plas
 
             {error && <Typography level="body-sm" color="danger">{error}</Typography>}
 
+            <SearchPanel
+                plasmid={plasmid}
+                activeIndex={activeHit}
+                onResults={handleSearchResults}
+                onActivate={handleActivateHit}
+            />
+
             <TrackPanel tracks={tracks} setTracks={setTracks} />
 
             <DetailPanel
@@ -492,6 +523,16 @@ export function PlasmidViewer({ tracks, setTracks, viewMode, setViewMode }: Plas
                             onKeyDown={handleKeyDown}
                             onPointerDown={startPanDrag}
                         >
+                            {/* First child, so hits sit *under* the glyphs and bases they mark. */}
+                            <SearchHighlights
+                                hits={searchHits}
+                                activeIndex={activeHit}
+                                bpToPx={bpToPx}
+                                pxPerBp={pxPerBp}
+                                height={totalHeight}
+                                sequenceLength={plasmid.length}
+                            />
+
                             <Ruler
                                 viewportStart={viewport.start}
                                 viewportEnd={viewport.end}
