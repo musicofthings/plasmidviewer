@@ -1,8 +1,8 @@
 name: CI
 
+# Pull requests only. Pushes to main run the same checks inside deploy.yml, which gates
+# publishing on them — running this on push too would just duplicate that work.
 on:
-  push:
-    branches: [main]
   pull_request:
 
 jobs:
