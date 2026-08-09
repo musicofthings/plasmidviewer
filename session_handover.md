@@ -1,5 +1,5 @@
 # Session Handover
-_Generated: 2026-08-09T09:35:00Z_
+_Generated: 2026-08-09T09:57:00Z_
 _Branch: main_
 _Trigger: user request | Context at compact: n/a_
 _Compact count this project: 0_
@@ -46,16 +46,20 @@ above that line is nearly used up.
 - [x] **FR-37** — primer model: nearest-neighbour Tm, 3'-anchored binding-site search, map arrows
 - [x] Fixed the per-track "Align to File" buttons not carrying the cut band's offset
 - [x] Published a logic-flow / feature board (3 SVG figures) — artifact + standalone files
+- [x] **"How it works" page** at `#how-it-works` — the 3 diagrams + what the app does and does not do
+- [x] **Tool strip** — search/enzymes/primers consolidated into one tabbed bar with live badges
+- [x] Empty state now advertises the four tool areas; header links to the new page
 - [x] Tests: 92 → 196
 
 ---
 
 ## 🔄 In Progress (Exact Resume Point)
 **Branch:** `main`
-**Last commit:** `4cf8122 FR-37: primer model, nearest-neighbour Tm, and binding-site search`
+**Last commit:** `0162e48 Surface the analysis tools in one strip instead of a stack of panels`
 **Next immediate action:** Nothing is half-finished. Working tree is clean; lint, `tsc -b`, 196
-tests and `npm run build` are all green. `main` is **ahead of `origin/main`** — FR-37 is not
-pushed yet, and the live site does not have it. Resume by pushing, then starting FR-38.
+tests and `npm run build` are all green. `main` is **4 commits ahead of `origin/main`** — none of
+FR-37, the "How it works" page or the tool strip is pushed, and the live site has none of it.
+Resume by pushing, then starting FR-38.
 
 ---
 
@@ -91,6 +95,10 @@ pushed yet, and the live site does not have it. Resume by pushing, then starting
 | Tm is quoted for the annealing region, not the oligo | The tail contributes nothing in the first cycle, so the whole-oligo Tm is the wrong number to anneal at. Both are shown — oligo in the list, region on the site | 2026-08-09 |
 | An interior mismatch ends the anneal by default | With `maxMismatches: 0` the rest of the oligo simply becomes tail, which is the honest reading. Opting into 1 mismatch reads through — that is how a mutagenic primer binds, and FR-48 will want it | 2026-08-09 |
 | `normalisePosition` moved to `utils/sequence` | Primers and PCR need the same circular wrap as cut positions; re-exported from `utils/enzymes` so existing callers and tests are untouched | 2026-08-09 |
+| Hash route, not a router | One secondary page does not justify a dependency. A hash is linkable, the back button works, and it needs no server-side rewrite — which matters because the site is static files behind Cloudflare Access with nothing to rewrite | 2026-08-09 |
+| Diagrams are committed SVG painted in Joy tokens | Inlined rather than `<img>`'d so the palette vars resolve, which makes them follow the dark-mode toggle *and* makes the diagram's "primer" colour literally the primer-arrow colour. `alignment.ts` is left neutral on purpose: diff marks are three different colours depending on the edit | 2026-08-09 |
+| Tool panes stay mounted while hidden | Closing a tool must hide its controls, not its marks. Unmounting would discard a search already run and force a REBASE re-digest on every tab switch | 2026-08-09 |
+| `HowItWorks` is lazily loaded | ~34 kB of inlined SVG on a page most sessions never open pushed the initial bundle 481 → 526 kB; split out it is a 42 kB chunk and the bundle is back to 484 kB | 2026-08-09 |
 
 ---
 
@@ -110,7 +118,7 @@ Project-specific:
 ```bash
 npm run dev                        # dev server on :5173
 npm test                           # vitest — 196 tests
-npm run lint && npx tsc -b         # both clean as of 4cf8122
+npm run lint && npx tsc -b         # both clean as of 0162e48
 npm run build                      # tsc -b && vite build
 node scripts/build-enzymes.mjs     # regenerate REBASE dataset (rarely needed)
 npx wrangler pages deploy dist --project-name plasmidviewer --branch main
@@ -118,7 +126,7 @@ npx wrangler pages deploy dist --project-name plasmidviewer --branch main
 
 ---
 
-## 📁 Files Modified — FR-37
+## 📁 Files Modified — FR-37, then the UI pass
 | File | Status |
 |------|--------|
 | src/models/primer.ts | added — Primer, BindingSite, Tm conditions |
@@ -129,23 +137,28 @@ npx wrangler pages deploy dist --project-name plasmidviewer --branch main
 | src/utils/enzymes.ts | modified — re-exports it from there |
 | src/components/PlasmidViewer.tsx | modified — primer band, panel wiring, band offset fix |
 | docs/ROADMAP-PHASE2.md, README.md | modified — gap analysis refreshed, usage documented |
+| src/components/HowItWorks.tsx | added — the `#how-it-works` page |
+| src/assets/diagrams/*.svg | added — pipeline, primer-anneal, dependencies (Joy-tokened) |
+| src/components/ToolStrip.tsx | added — tabbed tool bar + ToolPane |
+| src/components/SearchPanel/EnzymePanel/PrimerPanel.tsx | modified — own Sheet + collapse removed |
+| src/App.tsx | modified — hash route, lazy page, empty-state capability list |
 
 ---
 
 ## 🌿 Git Context
 ```
 Branch  : main
-Commit  : 4cf8122 FR-37: primer model, nearest-neighbour Tm, and binding-site search
-Status  : clean (0 dirty files) — AHEAD of origin/main, not yet pushed
+Commit  : 0162e48 Surface the analysis tools in one strip instead of a stack of panels
+Status  : clean (0 dirty files) — 4 commits AHEAD of origin/main, not yet pushed
 ```
 
 Recent commits:
 ```
+0162e48 Surface the analysis tools in one strip instead of a stack of panels
+7723499 "How it works" page explaining what happens behind the scenes
+653784e docs: session handover after FR-37
 4cf8122 FR-37: primer model, nearest-neighbour Tm, and binding-site search
 7fa9035 docs: session handover after FR-34
-a6f510f FR-34: restriction enzyme engine
-f10cd50 CI: merge the deploy workflow in and repoint it at Cloudflare
-ecba681 FR-36: search across sequence, protein, and features
 ```
 
 ---
