@@ -39,17 +39,19 @@ Against the published feature list, mapped to what exists in `src/` today.
 | **Features/Annotations** | Parse, display, colour by type, tooltips, detail panel | No create/edit, no auto-annotation, no custom types, no ribosomal slippage, no translation numbering |
 | **Alignment** | Pairwise Myers diff vs. a reference, multi-track stacking | Not a biological aligner (no scoring, gaps, or affine penalties); no MSA; no protein alignment; no contig assembly |
 | **Translations** | 3 forward frames, codon table 1 | No ORF finding, no reverse frames, no Make Protein / Reverse Translate, no fusion frame check |
-| **Data Management** | Local workspace→project→experiment→sample→sequence library (IndexedDB) | No export to any format at all — import is one-way |
+| **Data Management** | Local workspace→project→experiment→sample→sequence library (IndexedDB); GenBank + FASTA export | ✅ FR-35 closed the one-way import |
 | **Import formats** | FASTA, GenBank, SnapGene `.dna` | ~20 further formats listed |
-| **Search** | — | Nothing. No sequence, enzyme, feature, or primer search |
-| **Restriction enzymes** | — | Nothing |
-| **Primers** | — | Nothing (`primer_bind` annotations are displayed, but that is all) |
+| **Search** | DNA (IUPAC, both strands, wraps the origin), protein (6 frames), features | ✅ FR-36 |
+| **Restriction enzymes** | REBASE v608, site finding, overhangs, fragments, digest map | ✅ FR-34. No custom enzyme sets or methylation blocking yet |
+| **Primers** | Nearest-neighbour Tm, 3'-anchored binding-site search with 5' tails, arrows on the map, primers recovered from `primer_bind` annotations | ✅ FR-37. No design or dimer analysis (FR-39) |
 | **PCR & Mutagenesis** | — | Nothing |
 | **Molecular cloning** (8 methods) | — | Nothing |
 | **Agarose gel simulation** | — | Nothing |
 | **History tracking** | — | Nothing |
 
-Roughly: **two of twelve categories are meaningfully served.**
+Roughly: **six of twelve categories are meaningfully served** as of FR-37 — it was two when this
+document was written. The six that remain are the ones gated on an editable document (§4) or on
+curated data (§3.2), which is exactly the shape the phasing predicted.
 
 ## 3. Decisions that must be made first
 
@@ -137,7 +139,7 @@ Two tracks. Track A is the cloning workbench; Track B is analysis and breadth. T
 FR-31…FR-34 and can otherwise proceed independently.
 
 ### Phase 2.0 — Groundwork
-`FR-35` (export), `FR-36` **Search** (DNA/RNA/protein, enzymes, features, primers).
+`FR-35` (export) ✅, `FR-36` **Search** (DNA/RNA/protein, enzymes, features, primers) ✅.
 
 Both are self-contained, neither needs the foundations, and search is the highest
 value-to-effort item on the entire SnapGene list. Ships in weeks, not months. *Size: M.*
@@ -149,9 +151,15 @@ No new user-facing capability beyond editing and undo. This is the phase most li
 cut short under pressure and the one where that does the most damage.
 
 ### Phase 2.2 — Enzymes and primers
-`FR-34` (enzymes) · `FR-37` **Primer model**: Tm by nearest-neighbour, binding-site search,
+`FR-34` (enzymes) ✅ · `FR-37` **Primer model** ✅: Tm by nearest-neighbour, binding-site search,
 primer annotation · `FR-38` **PCR simulation**, including overlap-extension PCR ·
 `FR-39` **Primer design**, with automatic design for cloning procedures.
+
+FR-37 shipped ahead of Phase 2.1 deliberately: it is the last substantial capability that works
+on the read-only architecture, and it is what FR-38 — and through it FR-49 — waits on. The
+binding-site search is 3'-anchored rather than full-length, so a primer with a 5' cloning tail is
+found at the region it actually anneals to; FR-41 (homology assembly) needs exactly that
+distinction, since the tail *is* the overlap.
 
 First phase where the product does something SnapGene users would recognise as core.
 

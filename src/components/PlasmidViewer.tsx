@@ -25,8 +25,11 @@ import { SearchPanel } from "./SearchPanel";
 import { SearchHighlights } from "./SearchHighlights";
 import { EnzymePanel } from "./EnzymePanel";
 import { EnzymeCuts, CUT_BAND_HEIGHT } from "./EnzymeCuts";
+import { PrimerPanel } from "./PrimerPanel";
+import { PrimerBindings, PRIMER_BAND_HEIGHT } from "./PrimerBindings";
 import type { SearchHit } from "../utils/search";
 import type { CutSite } from "../models/enzyme";
+import type { BindingSite } from "../models/primer";
 import { categoriesPresent } from "../utils/featureStyle";
 import { parseFasta } from "../parsers/fasta";
 import { alignSequences, calculateOffset, type Mismatch } from "../utils/alignment";
@@ -66,6 +69,8 @@ export function PlasmidViewer({ tracks, setTracks, viewMode, setViewMode }: Plas
     const [searchHits, setSearchHits] = useState<SearchHit[]>([]);
     const [activeHit, setActiveHit] = useState(0);
     const [cutSites, setCutSites] = useState<CutSite[]>([]);
+    const [bindingSites, setBindingSites] = useState<BindingSite[]>([]);
+    const [primerNames, setPrimerNames] = useState<Map<string, string>>(new Map());
 
     const containerRef = useRef<HTMLDivElement>(null);
     const linearSvgRef = useRef<SVGSVGElement>(null);
@@ -255,8 +260,11 @@ export function PlasmidViewer({ tracks, setTracks, viewMode, setViewMode }: Plas
         [visibleTracks],
     );
 
-    // Cut marks need room above the ruler, but only once some enzyme is actually shown.
+    // Cut marks and primer arrows each need room above the ruler, but only once something is
+    // actually shown — an empty band would push the map down for nothing.
     const cutBand = cutSites.length > 0 ? CUT_BAND_HEIGHT : 0;
+    const primerBand = bindingSites.length > 0 ? PRIMER_BAND_HEIGHT : 0;
+    const topBand = cutBand + primerBand;
 
     const seqRows = sequenceRowCount(showComplement, showTranslation);
     const { boxes, totalHeight } = useMemo(() => stackTracks(
@@ -504,6 +512,12 @@ export function PlasmidViewer({ tracks, setTracks, viewMode, setViewMode }: Plas
 
             <EnzymePanel plasmid={plasmid} onCutsChange={setCutSites} />
 
+            <PrimerPanel
+                plasmid={plasmid}
+                onBindingsChange={setBindingSites}
+                onPrimersChange={setPrimerNames}
+            />
+
             <TrackPanel tracks={tracks} setTracks={setTracks} />
 
             <DetailPanel
@@ -523,8 +537,8 @@ export function PlasmidViewer({ tracks, setTracks, viewMode, setViewMode }: Plas
                         <svg
                             ref={linearSvgRef}
                             width={containerWidth}
-                            height={totalHeight + cutBand}
-                            viewBox={`0 0 ${containerWidth} ${totalHeight + cutBand}`}
+                            height={totalHeight + topBand}
+                            viewBox={`0 0 ${containerWidth} ${totalHeight + topBand}`}
                             style={{ display: 'block', cursor: 'grab', outline: 'none', touchAction: 'none' }}
                             tabIndex={0}
                             role="application"
@@ -537,12 +551,25 @@ export function PlasmidViewer({ tracks, setTracks, viewMode, setViewMode }: Plas
                                 bpToPx={bpToPx}
                                 viewportStart={viewport.start}
                                 viewportEnd={viewport.end}
-                                mapHeight={totalHeight}
+                                mapHeight={totalHeight + primerBand}
                             />
 
-                            {/* Everything below the cut band is shifted as a unit, so the band
-                                costs no coordinate changes anywhere else in the map. */}
+                            {/* Primer arrows sit between the cut marks and the ruler: both read
+                                against the same coordinates, and neither belongs inside a track. */}
                             <g transform={cutBand ? `translate(0, ${cutBand})` : undefined}>
+                                <PrimerBindings
+                                    sites={bindingSites}
+                                    names={primerNames}
+                                    bpToPx={bpToPx}
+                                    viewportStart={viewport.start}
+                                    viewportEnd={viewport.end}
+                                    sequenceLength={plasmid.length}
+                                />
+                            </g>
+
+                            {/* Everything below the bands is shifted as a unit, so they cost no
+                                coordinate changes anywhere else in the map. */}
+                            <g transform={topBand ? `translate(0, ${topBand})` : undefined}>
                             {/* First child, so hits sit *under* the glyphs and bases they mark. */}
                             <SearchHighlights
                                 hits={searchHits}
@@ -715,7 +742,9 @@ export function PlasmidViewer({ tracks, setTracks, viewMode, setViewMode }: Plas
                                 sx={{
                                     position: 'absolute',
                                     right: 0,
-                                    top: boxes[i].y,
+                                    // These are HTML over the SVG, so they have to carry the same
+                                    // band offset the map group is translated by.
+                                    top: boxes[i].y + topBand,
                                     height: TRACK_HEADER_HEIGHT,
                                     minHeight: TRACK_HEADER_HEIGHT,
                                     py: 0,

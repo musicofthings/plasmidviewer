@@ -1,7 +1,11 @@
 import type { Plasmid, Strand } from "../models/plasmid";
 import type { CutSite, Enzyme, EnzymeDatabase, Fragment } from "../models/enzyme";
 import { matchesAt } from "./search";
-import { complement, reverseComplement } from "./sequence";
+import { complement, normalisePosition, reverseComplement } from "./sequence";
+
+// Lives in ./sequence now that primers and PCR need the same wrap, and is re-exported here
+// because a cut position is where it was first needed and where callers look for it.
+export { normalisePosition };
 
 // The database is ~70 kB and only needed once a user opens the enzyme panel, so it is loaded
 // on demand rather than bundled into the initial payload — the same treatment the GenBank
@@ -11,17 +15,6 @@ let cached: EnzymeDatabase | null = null;
 export async function loadEnzymes(): Promise<EnzymeDatabase> {
     if (!cached) cached = (await import("../data/enzymes.json")).default as EnzymeDatabase;
     return cached;
-}
-
-/**
- * Wraps a cut position into 1..length.
- *
- * Type IIS enzymes cut outside their recognition site, so a site near the origin of a circular
- * plasmid produces a raw position of 0, a negative number, or one past the end. On a circular
- * molecule those are real positions on the other side of the origin.
- */
-export function normalisePosition(position: number, length: number): number {
-    return ((position - 1) % length + length) % length + 1;
 }
 
 function overhangTypeOf(overhang: number): CutSite["overhangType"] {

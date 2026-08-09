@@ -21,6 +21,17 @@ export function reverseComplement(sequence: string): string {
     return out;
 }
 
+/**
+ * Wraps a 1-based position into 1..length.
+ *
+ * Anything that reads outside a recognition site — a type IIS cut, a primer's annealing region,
+ * a PCR product — lands off either end when its anchor sits near the origin of a circular
+ * construct. On a circle those are real positions on the other side of base 1.
+ */
+export function normalisePosition(position: number, length: number): number {
+    return ((position - 1) % length + length) % length + 1;
+}
+
 // Standard genetic code (NCBI translation table 1). '*' is a stop codon.
 const CODONS: Record<string, string> = {
     TTT: "F", TTC: "F", TTA: "L", TTG: "L",

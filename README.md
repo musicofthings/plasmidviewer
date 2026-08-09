@@ -40,6 +40,16 @@ substitution, deletion and insertion; click any mark to inspect it.
 - **Read the bases** — *Complement* adds the reverse strand; *Translation* adds all three
   forward reading frames, with start codons in green and stops in red. Bases render as
   letters when they are wide enough, as colored bars when they aren't.
+- **Search** — DNA (IUPAC codes allowed, both strands, wraps the origin on a circular
+  construct), peptide across all six frames, or feature name / type / note. Enter and
+  Shift+Enter step through the hits.
+- **Restriction enzymes** — 722 enzymes from REBASE; filter to unique or rare cutters, tick any
+  of them to draw its cuts on the map, and read the resulting fragment sizes.
+- **Primers** — paste an oligo to get its length, GC%, nearest-neighbour Tm and every place it
+  anneals. The match is 3'-anchored, so a primer carrying a 5' cloning tail is still found at the
+  region it actually binds, and the quoted Tm is the annealing region's, not the whole oligo's.
+  Arrows on the map point the way the polymerase would extend. Any `primer_bind` annotations in
+  the file are picked up as primers automatically.
 - **Inspect** — click a feature or a diff mark to open the detail panel, then *Zoom to*.
 - **Compare** — the first file opened is the reference. Every later track is diffed against
   it. Drag a non-reference track to shift its alignment, or use *Align to File*.
