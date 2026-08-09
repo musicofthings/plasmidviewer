@@ -27,6 +27,7 @@ import { EnzymePanel } from "./EnzymePanel";
 import { EnzymeCuts, CUT_BAND_HEIGHT } from "./EnzymeCuts";
 import { PrimerPanel } from "./PrimerPanel";
 import { PrimerBindings, PRIMER_BAND_HEIGHT } from "./PrimerBindings";
+import { ToolStrip, ToolPane, type Tool } from "./ToolStrip";
 import type { SearchHit } from "../utils/search";
 import type { CutSite } from "../models/enzyme";
 import type { BindingSite } from "../models/primer";
@@ -71,6 +72,7 @@ export function PlasmidViewer({ tracks, setTracks, viewMode, setViewMode }: Plas
     const [cutSites, setCutSites] = useState<CutSite[]>([]);
     const [bindingSites, setBindingSites] = useState<BindingSite[]>([]);
     const [primerNames, setPrimerNames] = useState<Map<string, string>>(new Map());
+    const [activeTool, setActiveTool] = useState<string | null>("search");
 
     const containerRef = useRef<HTMLDivElement>(null);
     const linearSvgRef = useRef<SVGSVGElement>(null);
@@ -259,6 +261,36 @@ export function PlasmidViewer({ tracks, setTracks, viewMode, setViewMode }: Plas
         () => categoriesPresent(visibleTracks.flatMap(t => t.plasmid.features)),
         [visibleTracks],
     );
+
+    // Each tab reports what its tool is currently drawing, in the colour it draws it, so the map
+    // stays readable when the controls are put away.
+    const tools = useMemo<Tool[]>(() => [
+        {
+            id: "search",
+            label: "Search",
+            hint: "Find a nucleotide motif, a peptide across six frames, or a feature by name",
+            badge: searchHits.length > 0 ? `${activeHit + 1}/${searchHits.length}` : null,
+            color: "warning",
+        },
+        {
+            id: "enzymes",
+            label: "Enzymes",
+            hint: "Restriction sites from REBASE — unique cutters, overhangs, fragment sizes",
+            badge: cutSites.length > 0
+                ? `${cutSites.length} cut${cutSites.length === 1 ? "" : "s"}`
+                : null,
+            color: "danger",
+        },
+        {
+            id: "primers",
+            label: "Primers",
+            hint: "Tm and binding sites for an oligo, 5′ cloning tails included",
+            badge: bindingSites.length > 0
+                ? `${bindingSites.length} site${bindingSites.length === 1 ? "" : "s"}`
+                : null,
+            color: "success",
+        },
+    ], [searchHits.length, activeHit, cutSites.length, bindingSites.length]);
 
     // Cut marks and primer arrows each need room above the ruler, but only once something is
     // actually shown — an empty band would push the map down for nothing.
@@ -503,20 +535,35 @@ export function PlasmidViewer({ tracks, setTracks, viewMode, setViewMode }: Plas
 
             {error && <Typography level="body-sm" color="danger">{error}</Typography>}
 
-            <SearchPanel
-                plasmid={plasmid}
-                activeIndex={activeHit}
-                onResults={handleSearchResults}
-                onActivate={handleActivateHit}
-            />
+            <ToolStrip tools={tools} active={activeTool} onChange={setActiveTool}>
+                {/* Every tool stays mounted. Closing one hides its controls, not the marks it put
+                    on the map — and a search you have already run survives a trip to the enzyme
+                    list, which unmounting would throw away. */}
+                <ToolPane active={activeTool === "search"}>
+                    <SearchPanel
+                        plasmid={plasmid}
+                        activeIndex={activeHit}
+                        onResults={handleSearchResults}
+                        onActivate={handleActivateHit}
+                    />
+                </ToolPane>
 
-            <EnzymePanel plasmid={plasmid} onCutsChange={setCutSites} />
+                <ToolPane active={activeTool === "enzymes"}>
+                    <EnzymePanel
+                        plasmid={plasmid}
+                        active={activeTool === "enzymes"}
+                        onCutsChange={setCutSites}
+                    />
+                </ToolPane>
 
-            <PrimerPanel
-                plasmid={plasmid}
-                onBindingsChange={setBindingSites}
-                onPrimersChange={setPrimerNames}
-            />
+                <ToolPane active={activeTool === "primers"}>
+                    <PrimerPanel
+                        plasmid={plasmid}
+                        onBindingsChange={setBindingSites}
+                        onPrimersChange={setPrimerNames}
+                    />
+                </ToolPane>
+            </ToolStrip>
 
             <TrackPanel tracks={tracks} setTracks={setTracks} />
 

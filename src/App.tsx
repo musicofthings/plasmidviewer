@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import { CssVarsProvider, extendTheme, useColorScheme } from "@mui/joy/styles";
 import CssBaseline from "@mui/joy/CssBaseline";
 import Box from "@mui/joy/Box";
@@ -12,7 +12,10 @@ import { parseSnapGene } from "./parsers/snapgene";
 import { parseGenBank } from "./parsers/genbank";
 import { PlasmidViewer } from "./components/PlasmidViewer";
 import { LibrarySidebar } from "./components/LibrarySidebar";
-import { HowItWorks } from "./components/HowItWorks";
+// The three diagrams are ~34 kB of inlined SVG on a page most sessions never open, so it is
+// split out — the same treatment the GenBank parser and the enzyme database get.
+const HowItWorks = lazy(() => import("./components/HowItWorks")
+  .then(m => ({ default: m.HowItWorks })));
 import type { Track } from "./state/viewerState";
 import { useLibrary } from "./state/useLibrary";
 import type { NodeLevel, SequenceRecord } from "./models/library";
@@ -265,7 +268,13 @@ function App() {
         <Box sx={{ height: '100vh', bgcolor: 'background.body' }}>
           {/* Assigning the hash rather than calling history.back(): arriving here from a shared
               link leaves nothing to go back to. */}
-          <HowItWorks onBack={() => { window.location.hash = ""; }} />
+          <Suspense fallback={
+            <Box sx={{ p: 4 }}>
+              <Typography level="body-sm" sx={{ color: 'text.tertiary' }}>Loading…</Typography>
+            </Box>
+          }>
+            <HowItWorks onBack={() => { window.location.hash = ""; }} />
+          </Suspense>
         </Box>
       ) : (
       <Box sx={{ display: 'flex', height: '100vh', bgcolor: 'background.body' }}>

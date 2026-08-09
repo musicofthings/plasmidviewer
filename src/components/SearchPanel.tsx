@@ -1,5 +1,4 @@
 import { useMemo, useState, useEffect } from "react";
-import Sheet from "@mui/joy/Sheet";
 import Box from "@mui/joy/Box";
 import Input from "@mui/joy/Input";
 import Button from "@mui/joy/Button";
@@ -49,7 +48,8 @@ export function SearchPanel({ plasmid, activeIndex, onResults, onActivate }: Sea
         && !/^[ACGTURYSWKMBDHVN\s]+$/i.test(query);
 
     return (
-        <Sheet variant="outlined" sx={{ p: 1.5, borderRadius: 'md', display: 'flex', flexDirection: 'column', gap: 1 }}>
+        // The surrounding chrome belongs to the tool strip; this is only the controls.
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
             <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', flexWrap: 'wrap' }}>
                 <Input
                     size="sm"
@@ -125,6 +125,6 @@ export function SearchPanel({ plasmid, activeIndex, onResults, onActivate }: Sea
                     )}
                 </Box>
             )}
-        </Sheet>
+        </Box>
     );
 }

@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from "react";
-import Sheet from "@mui/joy/Sheet";
 import Box from "@mui/joy/Box";
 import Button from "@mui/joy/Button";
 import IconButton from "@mui/joy/IconButton";
@@ -28,7 +27,6 @@ function formatTm(tm: number): string {
 }
 
 export function PrimerPanel({ plasmid, onBindingsChange, onPrimersChange }: PrimerPanelProps) {
-    const [open, setOpen] = useState(false);
     const [typed, setTyped] = useState<Primer[]>([]);
     const [name, setName] = useState("");
     const [sequence, setSequence] = useState("");
@@ -99,18 +97,8 @@ export function PrimerPanel({ plasmid, onBindingsChange, onPrimersChange }: Prim
     };
 
     return (
-        <Sheet variant="outlined" sx={{ p: 1.5, borderRadius: 'md' }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
-                <Button
-                    size="sm"
-                    variant="plain"
-                    color="neutral"
-                    onClick={() => setOpen(o => !o)}
-                    aria-expanded={open}
-                >
-                    {open ? "▾" : "▸"} Primers
-                </Button>
-
                 <Typography level="body-xs" sx={{ color: 'text.tertiary' }}>
                     {primers.length === 0
                         ? "Paste an oligo to see its Tm and where it binds"
@@ -124,13 +112,12 @@ export function PrimerPanel({ plasmid, onBindingsChange, onPrimersChange }: Prim
                         onClick={() => setSelected(new Set())}
                         title="Clear the shown primers"
                     >
-                        {bindings.length} site{bindings.length === 1 ? "" : "s"} shown · clear
+                        Clear {selected.size} primer{selected.size === 1 ? "" : "s"}
                     </Chip>
                 )}
             </Box>
 
-            {open && (
-                <Box sx={{ mt: 1.5, display: 'flex', flexDirection: 'column', gap: 1 }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
                     <Box sx={{ display: 'flex', gap: 1, alignItems: 'flex-start', flexWrap: 'wrap' }}>
                         <Input
                             size="sm"
@@ -284,7 +271,6 @@ export function PrimerPanel({ plasmid, onBindingsChange, onPrimersChange }: Prim
                         quoted for the annealing region only — a 5′ tail does not pair in the first cycle.
                     </Typography>
                 </Box>
-            )}
-        </Sheet>
+        </Box>
     );
 }

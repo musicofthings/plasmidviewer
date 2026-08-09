@@ -1,5 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
-import Sheet from "@mui/joy/Sheet";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Box from "@mui/joy/Box";
 import Button from "@mui/joy/Button";
 import ButtonGroup from "@mui/joy/ButtonGroup";
@@ -17,6 +16,8 @@ import {
 
 interface EnzymePanelProps {
     plasmid: Plasmid;
+    /** True while this tool's tab is open. The 70 kB of REBASE is fetched the first time it is. */
+    active: boolean;
     /** Cut sites for the enzymes the user has switched on, lifted so the map can draw them. */
     onCutsChange: (cuts: CutSite[]) => void;
 }
@@ -33,28 +34,29 @@ function formatBases(n: number): string {
     return n >= 1000 ? `${(n / 1000).toFixed(n >= 10000 ? 0 : 1)} kb` : `${n} bp`;
 }
 
-export function EnzymePanel({ plasmid, onCutsChange }: EnzymePanelProps) {
+export function EnzymePanel({ plasmid, active, onCutsChange }: EnzymePanelProps) {
     const [database, setDatabase] = useState<EnzymeDatabase | null>(null);
-    const [open, setOpen] = useState(false);
-    const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [filter, setFilter] = useState<CutFilter>("unique");
     const [supplier, setSupplier] = useState<string>("");
     const [query, setQuery] = useState("");
     const [selected, setSelected] = useState<Set<string>>(new Set());
 
-    // ~70 kB of REBASE, fetched the first time the panel is opened rather than on page load.
-    // Driven from the click rather than an effect: opening the panel is the event, so there is
-    // no state to synchronise against.
-    const togglePanel = () => {
-        setOpen(o => !o);
-        if (database || loading) return;
-        setLoading(true);
+    // ~70 kB of REBASE, fetched the first time this tool is opened rather than on page load.
+    // The request is fired once and every state write happens in a promise callback, so opening
+    // the tab does not cascade a render.
+    const requested = useRef(false);
+    useEffect(() => {
+        if (!active || requested.current) return;
+        requested.current = true;
         loadEnzymes()
             .then(setDatabase)
-            .catch(() => setError("Could not load the enzyme database"))
-            .finally(() => setLoading(false));
-    };
+            .catch(() => setError("Could not load the enzyme database"));
+    }, [active]);
+
+    // Derived rather than stored: there is exactly one request, so "still waiting" is simply
+    // "asked for, nothing back, nothing failed".
+    const loading = active && !database && !error;
 
     const summaries = useMemo(
         () => (database ? summariseDigest(plasmid, database.enzymes) : []),
@@ -95,18 +97,8 @@ export function EnzymePanel({ plasmid, onCutsChange }: EnzymePanelProps) {
     });
 
     return (
-        <Sheet variant="outlined" sx={{ p: 1.5, borderRadius: 'md' }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
-                <Button
-                    size="sm"
-                    variant="plain"
-                    color="neutral"
-                    onClick={togglePanel}
-                    aria-expanded={open}
-                >
-                    {open ? "▾" : "▸"} Restriction enzymes
-                </Button>
-
                 {database && (
                     <Typography level="body-xs" sx={{ color: 'text.tertiary' }}>
                         {summaries.length} of {database.enzymes.length} cut this construct
@@ -121,13 +113,13 @@ export function EnzymePanel({ plasmid, onCutsChange }: EnzymePanelProps) {
                         onClick={() => setSelected(new Set())}
                         title="Clear the selected enzymes"
                     >
-                        {selectedCuts.length} cut{selectedCuts.length === 1 ? "" : "s"} shown · clear
+                        Clear {selected.size} enzyme{selected.size === 1 ? "" : "s"}
                     </Chip>
                 )}
             </Box>
 
-            {open && database && (
-                <Box sx={{ mt: 1.5, display: 'flex', flexDirection: 'column', gap: 1 }}>
+            {database && (
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
                     <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', flexWrap: 'wrap' }}>
                         <ButtonGroup size="sm" variant="outlined">
                             {FILTERS.map(f => (
@@ -240,6 +232,6 @@ export function EnzymePanel({ plasmid, onCutsChange }: EnzymePanelProps) {
                     </Typography>
                 </Box>
             )}
-        </Sheet>
+        </Box>
     );
 }
