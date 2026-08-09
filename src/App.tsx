@@ -12,6 +12,7 @@ import { parseSnapGene } from "./parsers/snapgene";
 import { parseGenBank } from "./parsers/genbank";
 import { PlasmidViewer } from "./components/PlasmidViewer";
 import { LibrarySidebar } from "./components/LibrarySidebar";
+import { HowItWorks } from "./components/HowItWorks";
 import type { Track } from "./state/viewerState";
 import { useLibrary } from "./state/useLibrary";
 import type { NodeLevel, SequenceRecord } from "./models/library";
@@ -88,7 +89,30 @@ function ModeToggle() {
 // Long enough that dragging a track's alignment does not write to IndexedDB on every frame.
 const SAVE_DEBOUNCE_MS = 400;
 
+const HOW_IT_WORKS = "#how-it-works";
+
+/**
+ * The one secondary page the app has, addressed by hash.
+ *
+ * A hash rather than a router: it is linkable and the back button works, it needs no dependency,
+ * and it survives the `base: './'` build without any server-side rewrite — which matters because
+ * the site is served as static files with no server to rewrite anything.
+ */
+function useHashRoute(): string {
+    const [hash, setHash] = useState(() =>
+        typeof window === "undefined" ? "" : window.location.hash);
+
+    useEffect(() => {
+        const onChange = () => setHash(window.location.hash);
+        window.addEventListener("hashchange", onChange);
+        return () => window.removeEventListener("hashchange", onChange);
+    }, []);
+
+    return hash;
+}
+
 function App() {
+  const route = useHashRoute();
   const [tracks, setTracks] = useState<Track[]>([]);
   const [viewMode, setViewMode] = useState<"linear" | "circular">("linear");
   const [error, setError] = useState<string | null>(null);
@@ -237,6 +261,13 @@ function App() {
   return (
     <CssVarsProvider theme={theme} defaultMode="light" modeStorageKey="plasmidviewer-mode">
       <CssBaseline />
+      {route === HOW_IT_WORKS ? (
+        <Box sx={{ height: '100vh', bgcolor: 'background.body' }}>
+          {/* Assigning the hash rather than calling history.back(): arriving here from a shared
+              link leaves nothing to go back to. */}
+          <HowItWorks onBack={() => { window.location.hash = ""; }} />
+        </Box>
+      ) : (
       <Box sx={{ display: 'flex', height: '100vh', bgcolor: 'background.body' }}>
         <Box sx={{ width: 300, flexShrink: 0, height: '100%', bgcolor: 'background.surface', borderRight: '1px solid', borderColor: 'divider' }}>
           <LibrarySidebar
@@ -259,6 +290,15 @@ function App() {
               </Typography>
             </Box>
             <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', flexShrink: 0 }}>
+              <Button
+                component="a"
+                href={HOW_IT_WORKS}
+                variant="plain"
+                color="neutral"
+                title="What the app does with your file, and what the numbers mean"
+              >
+                How it works
+              </Button>
               <ModeToggle />
               <Button
                 variant="outlined"
@@ -304,10 +344,41 @@ function App() {
               <Typography level="body-md">
                 Pick a sequence from the library on the left, or upload a FASTA, GenBank, or SnapGene file.
               </Typography>
-              <Button component="label" size="lg" sx={{ mt: 2 }}>
-                Select File
-                <input type="file" hidden onChange={handleFileUpload} accept=".fasta,.fa,.txt,.dna,.gb,.gbk" />
-              </Button>
+
+              {/* The tools only appear once a construct is open, so this is the only place a
+                  first-time user can find out the app does more than draw a map. */}
+              <Box
+                sx={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))',
+                  gap: 1.5,
+                  maxWidth: 860,
+                  mt: 2,
+                  textAlign: 'left',
+                }}
+              >
+                {[
+                  { title: "Search", body: "DNA with ambiguity codes on both strands, peptides across six frames, or a feature by name." },
+                  { title: "Restriction enzymes", body: "722 enzymes from REBASE. Find the unique cutters, draw their cuts, read the fragment sizes." },
+                  { title: "Primers", body: "Paste an oligo for its Tm and every site it anneals to — 5′ cloning tails included." },
+                  { title: "Compare & export", body: "Diff tracks against a reference, then export the map as SVG or PNG and the construct as GenBank or FASTA." },
+                ].map(item => (
+                  <Box key={item.title}>
+                    <Typography level="title-sm">{item.title}</Typography>
+                    <Typography level="body-xs" sx={{ color: 'text.tertiary' }}>{item.body}</Typography>
+                  </Box>
+                ))}
+              </Box>
+
+              <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', mt: 2 }}>
+                <Button component="label" size="lg">
+                  Select File
+                  <input type="file" hidden onChange={handleFileUpload} accept=".fasta,.fa,.txt,.dna,.gb,.gbk" />
+                </Button>
+                <Button component="a" href={HOW_IT_WORKS} size="lg" variant="plain" color="neutral">
+                  How it works
+                </Button>
+              </Box>
             </Sheet>
           ) : (
             <PlasmidViewer
@@ -319,6 +390,7 @@ function App() {
           )}
         </Box>
       </Box>
+      )}
     </CssVarsProvider>
   );
 }
