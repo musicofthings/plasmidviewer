@@ -28,11 +28,13 @@ import { EnzymeCuts, CUT_BAND_HEIGHT } from "./EnzymeCuts";
 import { PrimerPanel } from "./PrimerPanel";
 import { CodonPanel } from "./CodonPanel";
 import { PcrPanel } from "./PcrPanel";
+import { GelPanel } from "./GelPanel";
 import { PrimerBindings, PRIMER_BAND_HEIGHT } from "./PrimerBindings";
 import { ToolStrip, ToolPane, type Tool } from "./ToolStrip";
 import type { SearchHit } from "../utils/search";
 import type { CutSite } from "../models/enzyme";
 import type { BindingSite, Primer } from "../models/primer";
+import type { Amplicon } from "../models/pcr";
 import { categoriesPresent } from "../utils/featureStyle";
 import { parseFasta } from "../parsers/fasta";
 import { alignSequences, calculateOffset, type Mismatch } from "../utils/alignment";
@@ -75,7 +77,7 @@ export function PlasmidViewer({ tracks, setTracks, viewMode, setViewMode }: Plas
     const [bindingSites, setBindingSites] = useState<BindingSite[]>([]);
     const [primers, setPrimers] = useState<Primer[]>([]);
     const [codonChanges, setCodonChanges] = useState(0);
-    const [productCount, setProductCount] = useState(0);
+    const [amplicons, setAmplicons] = useState<Amplicon[]>([]);
     const [activeTool, setActiveTool] = useState<string | null>("search");
 
     const containerRef = useRef<HTMLDivElement>(null);
@@ -286,6 +288,10 @@ export function PlasmidViewer({ tracks, setTracks, viewMode, setViewMode }: Plas
         [visibleTracks],
     );
 
+    // Sample lanes the gel could run right now — the ladder and the uncut lane are always
+    // available, so badging those would say the same thing on every construct.
+    const gelLaneCount = (cutSites.length > 0 ? 1 : 0) + (amplicons.length > 0 ? 1 : 0);
+
     // Each tab reports what its tool is currently drawing, in the colour it draws it, so the map
     // stays readable when the controls are put away.
     const tools = useMemo<Tool[]>(() => [
@@ -318,8 +324,8 @@ export function PlasmidViewer({ tracks, setTracks, viewMode, setViewMode }: Plas
             id: "pcr",
             label: "PCR",
             hint: "Amplify with the primers above — products, annealing temperature, second bands",
-            badge: productCount > 0
-                ? `${productCount} product${productCount === 1 ? "" : "s"}`
+            badge: amplicons.length > 0
+                ? `${amplicons.length} product${amplicons.length === 1 ? "" : "s"}`
                 : null,
             color: "success",
         },
@@ -330,8 +336,15 @@ export function PlasmidViewer({ tracks, setTracks, viewMode, setViewMode }: Plas
             badge: codonChanges > 0 ? `${codonChanges} codons` : null,
             color: "primary",
         },
+        {
+            id: "gel",
+            label: "Gel",
+            hint: "Run the current digest and PCR products on a simulated agarose gel",
+            badge: gelLaneCount > 0 ? `${gelLaneCount} lane${gelLaneCount === 1 ? "" : "s"}` : null,
+            color: "neutral",
+        },
     ], [searchHits.length, activeHit, cutSites.length, bindingSites.length, codonChanges,
-        productCount]);
+        amplicons.length, gelLaneCount]);
 
     // Cut marks and primer arrows each need room above the ruler, but only once something is
     // actually shown — an empty band would push the map down for nothing.
@@ -609,9 +622,13 @@ export function PlasmidViewer({ tracks, setTracks, viewMode, setViewMode }: Plas
                     <PcrPanel
                         plasmid={plasmid}
                         primers={primers}
-                        onProductCount={setProductCount}
+                        onProductsChange={setAmplicons}
                         onOpenProduct={openProduct}
                     />
+                </ToolPane>
+
+                <ToolPane active={activeTool === "gel"}>
+                    <GelPanel plasmid={plasmid} cutSites={cutSites} amplicons={amplicons} />
                 </ToolPane>
 
                 <ToolPane active={activeTool === "codons"}>

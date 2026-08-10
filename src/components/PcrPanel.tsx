@@ -16,8 +16,9 @@ interface PcrPanelProps {
     plasmid: Plasmid;
     /** Every primer the primer tool knows about — typed there or read from the file. */
     primers: Primer[];
-    /** How many products the current setup gives, so the tab can badge it. */
-    onProductCount: (count: number) => void;
+    /** The current products, lifted so the tab can badge them and the gel can load them into a
+     *  lane — a reaction's extra bands are most legible as bands. */
+    onProductsChange: (products: Amplicon[]) => void;
     /** Open a product as its own track, so it can be inspected, diffed and exported like any
      *  other construct. The source construct is never modified. */
     onOpenProduct: (product: Plasmid) => void;
@@ -34,7 +35,7 @@ function formatBp(n: number): string {
  * back into the template. Every facing pair is reported rather than just the intended one,
  * because a second band is the thing worth knowing before the bench tells you.
  */
-export function PcrPanel({ plasmid, primers, onProductCount, onOpenProduct }: PcrPanelProps) {
+export function PcrPanel({ plasmid, primers, onProductsChange, onOpenProduct }: PcrPanelProps) {
     // `null` means "every primer", so a newly typed oligo joins the reaction without needing to
     // be switched on. It becomes a real set only once the user narrows it by hand.
     const [selected, setSelected] = useState<Set<string> | null>(null);
@@ -58,7 +59,7 @@ export function PcrPanel({ plasmid, primers, onProductCount, onOpenProduct }: Pc
         });
     }, [plasmid, active, tolerateMismatch, maxProduct]);
 
-    useEffect(() => { onProductCount(products.length); }, [products, onProductCount]);
+    useEffect(() => { onProductsChange(products); }, [products, onProductsChange]);
 
     const toggle = (id: string) => setSelected(prev => {
         const next = new Set(prev ?? primers.map(p => p.id));

@@ -172,6 +172,26 @@ only partly amplified, never carried across truncated. A product opens as its ow
 (`ampliconPlasmid`), so it can be diffed against the template and exported like any construct —
 still read-only, the template is never modified.
 
+**FR-49 (agarose gel), shipped.** Runs whatever the enzyme and PCR tools currently predict —
+a ladder lane, the uncut construct, the selected digest, and all PCR products in one lane
+because they come from one reaction. Migration is linear in log(size) within the window the
+chosen agarose separates; outside it, position carries no size information and bands are drawn
+as smears piled at the well or run to the dye front, labelled with a bound rather than a size.
+
+The two things it refuses to fake are what make it worth having. Bands closer than the gel can
+separate are **merged**, so it cannot show a doublet that would not appear. And intensity follows
+DNA **mass**, not molarity, so a digest's smallest fragment is correctly faint — the usual reason
+an expected band is missing from a real photograph. Faintness is judged against the brightest
+*resolved* band, not against a pile-up, or an ordinary ladder would report its own lower bands as
+invisible.
+
+Drawn inverted (dark bands on light) as gels are reproduced in print, which also means it reads
+in both colour schemes. Known simplification, stated in the panel: separation is uniform across
+the window, whereas a real gel resolves best mid-range — so two sizes near an edge may be drawn
+apart that would run together. Fixing that needs a fit to real mobility data, not a tidier
+formula. An uncut circular plasmid is drawn at its true length and flagged, since supercoiled DNA
+does not migrate by length and a real prep shows several forms.
+
 Deliberately deferred: **overlap-extension (SOE) PCR**, which the original line item bundled in.
 Fusing two products through complementary tails is the same operation as FR-41's homology
 assembly, and building it twice under two names is how the enzyme and cloning engines would
@@ -192,7 +212,7 @@ usage; FR-43–45 are comparatively niche and are reasonable candidates to defer
 `FR-46` ORF finding · `FR-47` Make Protein / Reverse Translate / reverse frames / fusion
 frame checking · `FR-48` Mutagenesis — primer-directed, silent (add/remove sites, on
 FR-34); **codon optimisation by usage table is shipped** (see below) ·
-`FR-49` Agarose gel simulation with MW markers
+`FR-49` Agarose gel simulation with MW markers ✅ (see below)
 (on FR-34 + FR-38) · `FR-50` Real pairwise alignment (Needleman–Wunsch / Smith–Waterman
 with affine gaps), replacing the Myers diff and answering
 [PRD open question 1](./PRD.md#9-open-questions) · `FR-51` Progressive MSA for DNA and
