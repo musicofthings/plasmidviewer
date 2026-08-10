@@ -15,6 +15,12 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    # The token is bound at job level, not on the deploy step, because a step's `if:` is
+    # evaluated before that step's own `env:` exists — so a token defined there reads as empty
+    # and the condition can never be true. Job-level env is visible to a step's `if:`;
+    # `secrets` is not a context that `if:` can read at all.
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
@@ -34,6 +40,12 @@ jobs:
       - name: Deploy to Cloudflare Pages
         if: github.event_name == 'push' && github.ref == 'refs/heads/main' && env.CLOUDFLARE_API_TOKEN != ''
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: 3b54d713791d243cfbed61dfeb46e1fc
         run: npx wrangler pages deploy dist --project-name plasmidviewer --branch main
+
+      # A skipped deploy is indistinguishable from a successful one in the checks UI, which is
+      # how a missing token goes unnoticed for weeks. Say it out loud instead.
+      - name: Note that no deploy happened
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && env.CLOUDFLARE_API_TOKEN == ''
+        run: |
+          echo "::warning title=Not deployed::CLOUDFLARE_API_TOKEN is not set, so dist/ was built but not published. Add it under Settings -> Secrets and variables -> Actions."
