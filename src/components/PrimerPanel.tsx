@@ -16,8 +16,10 @@ interface PrimerPanelProps {
     plasmid: Plasmid;
     /** Binding sites for the primers the user has switched on, lifted so the map can draw them. */
     onBindingsChange: (sites: BindingSite[]) => void;
-    /** Primer id -> name, so the map can label an arrow. */
-    onPrimersChange: (names: Map<string, string>) => void;
+    /** Every primer this panel knows about — typed here plus recovered from the file. Lifted
+     *  whole rather than as a name lookup so PCR can amplify with them without asking the user
+     *  to type the same oligos into a second panel. */
+    onPrimersChange: (primers: Primer[]) => void;
 }
 
 const IUPAC_ONLY = /^[ACGTURYSWKMBDHVN\s]+$/i;
@@ -58,13 +60,8 @@ export function PrimerPanel({ plasmid, onBindingsChange, onPrimersChange }: Prim
         return counts;
     }, [plasmid, primers, tolerateMismatch]);
 
-    const names = useMemo(
-        () => new Map(primers.map(p => [p.id, p.name])),
-        [primers],
-    );
-
     useEffect(() => { onBindingsChange(bindings); }, [bindings, onBindingsChange]);
-    useEffect(() => { onPrimersChange(names); }, [names, onPrimersChange]);
+    useEffect(() => { onPrimersChange(primers); }, [primers, onPrimersChange]);
 
     const clean = sequence.replace(/\s/g, "").toUpperCase();
     const invalid = clean.length > 0 && !IUPAC_ONLY.test(clean);
@@ -253,7 +250,8 @@ export function PrimerPanel({ plasmid, onBindingsChange, onPrimersChange }: Prim
                                     key={`${site.primerId}-${site.start}-${site.strand}-${i}`}
                                     size="sm" variant="soft" color="success"
                                     sx={{ fontFamily: 'code' }}
-                                    title={`${names.get(site.primerId) ?? ""} · anneal Tm ${formatTm(site.tm)}`}
+                                    title={`${primers.find(p => p.id === site.primerId)?.name ?? ""}`
+                                        + ` · anneal Tm ${formatTm(site.tm)}`}
                                 >
                                     {describeBindingSite(site)}
                                 </Chip>

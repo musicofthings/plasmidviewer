@@ -152,14 +152,30 @@ cut short under pressure and the one where that does the most damage.
 
 ### Phase 2.2 — Enzymes and primers
 `FR-34` (enzymes) ✅ · `FR-37` **Primer model** ✅: Tm by nearest-neighbour, binding-site search,
-primer annotation · `FR-38` **PCR simulation**, including overlap-extension PCR ·
-`FR-39` **Primer design**, with automatic design for cloning procedures.
+primer annotation · `FR-38` **PCR simulation** ✅ (standard PCR; overlap-extension deferred, see
+below) · `FR-39` **Primer design**, with automatic design for cloning procedures.
 
 FR-37 shipped ahead of Phase 2.1 deliberately: it is the last substantial capability that works
 on the read-only architecture, and it is what FR-38 — and through it FR-49 — waits on. The
 binding-site search is 3'-anchored rather than full-length, so a primer with a 5' cloning tail is
 found at the region it actually anneals to; FR-41 (homology assembly) needs exactly that
 distinction, since the tail *is* the overlap.
+
+**FR-38 (standard PCR), shipped.** Every facing pair of binding sites is one product, so a
+non-specific reaction reports its extra bands rather than only the intended one. Products carry
+the *primers'* bases at both ends — 5' tails included, mismatches spelled the primer's way —
+which is what makes them usable for cloning and site-directed mutagenesis rather than being a
+slice of the template. On a circular construct a pair pointing outward amplifies the other way
+round, so inverse / around-the-horn PCR falls out of the same code path instead of needing a
+mode. Source annotations are rebased onto the product when wholly contained and *reported* when
+only partly amplified, never carried across truncated. A product opens as its own linear track
+(`ampliconPlasmid`), so it can be diffed against the template and exported like any construct —
+still read-only, the template is never modified.
+
+Deliberately deferred: **overlap-extension (SOE) PCR**, which the original line item bundled in.
+Fusing two products through complementary tails is the same operation as FR-41's homology
+assembly, and building it twice under two names is how the enzyme and cloning engines would
+drift apart. It should be one engine, built once, in Phase 2.3.
 
 First phase where the product does something SnapGene users would recognise as core.
 

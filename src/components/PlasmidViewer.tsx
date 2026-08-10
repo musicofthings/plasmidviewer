@@ -9,7 +9,7 @@ import Option from "@mui/joy/Option";
 import Typography from "@mui/joy/Typography";
 import Chip from "@mui/joy/Chip";
 
-import type { Feature } from "../models/plasmid";
+import type { Feature, Plasmid } from "../models/plasmid";
 import type { Viewport, Track } from "../state/viewerState";
 import { Backbone } from "./Backbone";
 import { FeatureGlyph } from "./FeatureGlyph";
@@ -27,11 +27,12 @@ import { EnzymePanel } from "./EnzymePanel";
 import { EnzymeCuts, CUT_BAND_HEIGHT } from "./EnzymeCuts";
 import { PrimerPanel } from "./PrimerPanel";
 import { CodonPanel } from "./CodonPanel";
+import { PcrPanel } from "./PcrPanel";
 import { PrimerBindings, PRIMER_BAND_HEIGHT } from "./PrimerBindings";
 import { ToolStrip, ToolPane, type Tool } from "./ToolStrip";
 import type { SearchHit } from "../utils/search";
 import type { CutSite } from "../models/enzyme";
-import type { BindingSite } from "../models/primer";
+import type { BindingSite, Primer } from "../models/primer";
 import { categoriesPresent } from "../utils/featureStyle";
 import { parseFasta } from "../parsers/fasta";
 import { alignSequences, calculateOffset, type Mismatch } from "../utils/alignment";
@@ -72,8 +73,9 @@ export function PlasmidViewer({ tracks, setTracks, viewMode, setViewMode }: Plas
     const [activeHit, setActiveHit] = useState(0);
     const [cutSites, setCutSites] = useState<CutSite[]>([]);
     const [bindingSites, setBindingSites] = useState<BindingSite[]>([]);
-    const [primerNames, setPrimerNames] = useState<Map<string, string>>(new Map());
+    const [primers, setPrimers] = useState<Primer[]>([]);
     const [codonChanges, setCodonChanges] = useState(0);
+    const [productCount, setProductCount] = useState(0);
     const [activeTool, setActiveTool] = useState<string | null>("search");
 
     const containerRef = useRef<HTMLDivElement>(null);
@@ -257,6 +259,26 @@ export function PlasmidViewer({ tracks, setTracks, viewMode, setViewMode }: Plas
         return map;
     }, [tracks, pxPerBp]);
 
+    // The map labels an arrow by name; the primer list itself is what PCR needs, so the lookup
+    // is derived here rather than plumbed separately.
+    const primerNames = useMemo(
+        () => new Map(primers.map(p => [p.id, p.name])),
+        [primers],
+    );
+
+    // A PCR product arrives as a construct in its own right and is appended as a track, so it can
+    // be inspected, diffed against the template and exported like anything else. Nothing about
+    // the reference changes — this is still a read-only tool.
+    const openProduct = useCallback((product: Plasmid) => {
+        setTracks(prev => [...prev, {
+            id: crypto.randomUUID(),
+            plasmid: product,
+            offsetBp: 0,
+            color: "neutral",
+            isVisible: true,
+        }]);
+    }, [setTracks]);
+
     const visibleTracks = useMemo(() => tracks.filter(t => t.isVisible), [tracks]);
     const referenceGc = useMemo(() => gcContent(plasmid.sequence), [plasmid.sequence]);
     const legendCategories = useMemo(
@@ -293,13 +315,23 @@ export function PlasmidViewer({ tracks, setTracks, viewMode, setViewMode }: Plas
             color: "success",
         },
         {
+            id: "pcr",
+            label: "PCR",
+            hint: "Amplify with the primers above — products, annealing temperature, second bands",
+            badge: productCount > 0
+                ? `${productCount} product${productCount === 1 ? "" : "s"}`
+                : null,
+            color: "success",
+        },
+        {
             id: "codons",
             label: "Codon optimise",
             hint: "Rewrite a CDS for an expression host's codon usage, without changing the protein",
             badge: codonChanges > 0 ? `${codonChanges} codons` : null,
             color: "primary",
         },
-    ], [searchHits.length, activeHit, cutSites.length, bindingSites.length, codonChanges]);
+    ], [searchHits.length, activeHit, cutSites.length, bindingSites.length, codonChanges,
+        productCount]);
 
     // Cut marks and primer arrows each need room above the ruler, but only once something is
     // actually shown — an empty band would push the map down for nothing.
@@ -569,7 +601,16 @@ export function PlasmidViewer({ tracks, setTracks, viewMode, setViewMode }: Plas
                     <PrimerPanel
                         plasmid={plasmid}
                         onBindingsChange={setBindingSites}
-                        onPrimersChange={setPrimerNames}
+                        onPrimersChange={setPrimers}
+                    />
+                </ToolPane>
+
+                <ToolPane active={activeTool === "pcr"}>
+                    <PcrPanel
+                        plasmid={plasmid}
+                        primers={primers}
+                        onProductCount={setProductCount}
+                        onOpenProduct={openProduct}
                     />
                 </ToolPane>
 
