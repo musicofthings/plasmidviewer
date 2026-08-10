@@ -26,6 +26,7 @@ import { SearchHighlights } from "./SearchHighlights";
 import { EnzymePanel } from "./EnzymePanel";
 import { EnzymeCuts, CUT_BAND_HEIGHT } from "./EnzymeCuts";
 import { PrimerPanel } from "./PrimerPanel";
+import { CodonPanel } from "./CodonPanel";
 import { PrimerBindings, PRIMER_BAND_HEIGHT } from "./PrimerBindings";
 import { ToolStrip, ToolPane, type Tool } from "./ToolStrip";
 import type { SearchHit } from "../utils/search";
@@ -72,6 +73,7 @@ export function PlasmidViewer({ tracks, setTracks, viewMode, setViewMode }: Plas
     const [cutSites, setCutSites] = useState<CutSite[]>([]);
     const [bindingSites, setBindingSites] = useState<BindingSite[]>([]);
     const [primerNames, setPrimerNames] = useState<Map<string, string>>(new Map());
+    const [codonChanges, setCodonChanges] = useState(0);
     const [activeTool, setActiveTool] = useState<string | null>("search");
 
     const containerRef = useRef<HTMLDivElement>(null);
@@ -290,7 +292,14 @@ export function PlasmidViewer({ tracks, setTracks, viewMode, setViewMode }: Plas
                 : null,
             color: "success",
         },
-    ], [searchHits.length, activeHit, cutSites.length, bindingSites.length]);
+        {
+            id: "codons",
+            label: "Codon optimise",
+            hint: "Rewrite a CDS for an expression host's codon usage, without changing the protein",
+            badge: codonChanges > 0 ? `${codonChanges} codons` : null,
+            color: "primary",
+        },
+    ], [searchHits.length, activeHit, cutSites.length, bindingSites.length, codonChanges]);
 
     // Cut marks and primer arrows each need room above the ruler, but only once something is
     // actually shown — an empty band would push the map down for nothing.
@@ -561,6 +570,14 @@ export function PlasmidViewer({ tracks, setTracks, viewMode, setViewMode }: Plas
                         plasmid={plasmid}
                         onBindingsChange={setBindingSites}
                         onPrimersChange={setPrimerNames}
+                    />
+                </ToolPane>
+
+                <ToolPane active={activeTool === "codons"}>
+                    <CodonPanel
+                        plasmid={plasmid}
+                        active={activeTool === "codons"}
+                        onChangeCount={setCodonChanges}
                     />
                 </ToolPane>
             </ToolStrip>

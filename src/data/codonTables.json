@@ -1,0 +1,2944 @@
+{
+  "retrieved": "2026-08-10",
+  "source": "Kazusa Codon Usage Database (CUTG), Nakamura et al. NAR 2000;28:292",
+  "url": "https://www.kazusa.or.jp/codon/cgi-bin/showcodon.cgi",
+  "hosts": [
+    {
+      "id": "e_coli",
+      "name": "E. coli K-12",
+      "note": "W3110; the standard cloning and expression strain",
+      "taxid": 316407,
+      "source": "Escherichia coli W3110",
+      "cdsCount": 4332,
+      "codonCount": 1372057,
+      "codons": {
+        "GGG": {
+          "fraction": 0.1502,
+          "perThousand": 11.02
+        },
+        "GGA": {
+          "fraction": 0.1071,
+          "perThousand": 7.85
+        },
+        "GGT": {
+          "fraction": 0.3367,
+          "perThousand": 24.69
+        },
+        "GGC": {
+          "fraction": 0.406,
+          "perThousand": 29.77
+        },
+        "GAG": {
+          "fraction": 0.3115,
+          "perThousand": 17.95
+        },
+        "GAA": {
+          "fraction": 0.6885,
+          "perThousand": 39.67
+        },
+        "GAT": {
+          "fraction": 0.6273,
+          "perThousand": 32.23
+        },
+        "GAC": {
+          "fraction": 0.3727,
+          "perThousand": 19.15
+        },
+        "GTG": {
+          "fraction": 0.3721,
+          "perThousand": 26.32
+        },
+        "GTA": {
+          "fraction": 0.1535,
+          "perThousand": 10.86
+        },
+        "GTT": {
+          "fraction": 0.2575,
+          "perThousand": 18.21
+        },
+        "GTC": {
+          "fraction": 0.2169,
+          "perThousand": 15.34
+        },
+        "GCG": {
+          "fraction": 0.3574,
+          "perThousand": 33.91
+        },
+        "GCA": {
+          "fraction": 0.2118,
+          "perThousand": 20.09
+        },
+        "GCT": {
+          "fraction": 0.1599,
+          "perThousand": 15.17
+        },
+        "GCC": {
+          "fraction": 0.2708,
+          "perThousand": 25.69
+        },
+        "AGG": {
+          "fraction": 0.0197,
+          "perThousand": 1.09
+        },
+        "AGA": {
+          "fraction": 0.0365,
+          "perThousand": 2.02
+        },
+        "AGT": {
+          "fraction": 0.1507,
+          "perThousand": 8.69
+        },
+        "AGC": {
+          "fraction": 0.2789,
+          "perThousand": 16.08
+        },
+        "AAG": {
+          "fraction": 0.2351,
+          "perThousand": 10.33
+        },
+        "AAA": {
+          "fraction": 0.7649,
+          "perThousand": 33.61
+        },
+        "AAT": {
+          "fraction": 0.449,
+          "perThousand": 17.57
+        },
+        "AAC": {
+          "fraction": 0.551,
+          "perThousand": 21.56
+        },
+        "ATG": {
+          "fraction": 1,
+          "perThousand": 27.82
+        },
+        "ATA": {
+          "fraction": 0.07,
+          "perThousand": 4.18
+        },
+        "ATT": {
+          "fraction": 0.5082,
+          "perThousand": 30.35
+        },
+        "ATC": {
+          "fraction": 0.4218,
+          "perThousand": 25.19
+        },
+        "ACG": {
+          "fraction": 0.2691,
+          "perThousand": 14.45
+        },
+        "ACA": {
+          "fraction": 0.1283,
+          "perThousand": 6.89
+        },
+        "ACT": {
+          "fraction": 0.1645,
+          "perThousand": 8.83
+        },
+        "ACC": {
+          "fraction": 0.438,
+          "perThousand": 23.52
+        },
+        "TGG": {
+          "fraction": 1,
+          "perThousand": 15.22
+        },
+        "TGA": {
+          "fraction": 0.2881,
+          "perThousand": 0.91
+        },
+        "TGT": {
+          "fraction": 0.4437,
+          "perThousand": 5.11
+        },
+        "TGC": {
+          "fraction": 0.5563,
+          "perThousand": 6.41
+        },
+        "TAG": {
+          "fraction": 0.074,
+          "perThousand": 0.23
+        },
+        "TAA": {
+          "fraction": 0.6378,
+          "perThousand": 2.02
+        },
+        "TAT": {
+          "fraction": 0.5675,
+          "perThousand": 16.06
+        },
+        "TAC": {
+          "fraction": 0.4325,
+          "perThousand": 12.24
+        },
+        "TTG": {
+          "fraction": 0.1278,
+          "perThousand": 13.6
+        },
+        "TTA": {
+          "fraction": 0.1293,
+          "perThousand": 13.77
+        },
+        "TTT": {
+          "fraction": 0.5729,
+          "perThousand": 22.2
+        },
+        "TTC": {
+          "fraction": 0.4271,
+          "perThousand": 16.55
+        },
+        "TCG": {
+          "fraction": 0.1543,
+          "perThousand": 8.9
+        },
+        "TCA": {
+          "fraction": 0.1216,
+          "perThousand": 7.01
+        },
+        "TCT": {
+          "fraction": 0.1455,
+          "perThousand": 8.39
+        },
+        "TCC": {
+          "fraction": 0.1491,
+          "perThousand": 8.6
+        },
+        "CGG": {
+          "fraction": 0.0975,
+          "perThousand": 5.39
+        },
+        "CGA": {
+          "fraction": 0.0634,
+          "perThousand": 3.51
+        },
+        "CGT": {
+          "fraction": 0.3804,
+          "perThousand": 21.04
+        },
+        "CGC": {
+          "fraction": 0.4024,
+          "perThousand": 22.25
+        },
+        "CAG": {
+          "fraction": 0.6535,
+          "perThousand": 29.03
+        },
+        "CAA": {
+          "fraction": 0.3465,
+          "perThousand": 15.39
+        },
+        "CAT": {
+          "fraction": 0.5704,
+          "perThousand": 12.97
+        },
+        "CAC": {
+          "fraction": 0.4296,
+          "perThousand": 9.77
+        },
+        "CTG": {
+          "fraction": 0.499,
+          "perThousand": 53.13
+        },
+        "CTA": {
+          "fraction": 0.036,
+          "perThousand": 3.84
+        },
+        "CTT": {
+          "fraction": 0.1032,
+          "perThousand": 10.99
+        },
+        "CTC": {
+          "fraction": 0.1045,
+          "perThousand": 11.13
+        },
+        "CCG": {
+          "fraction": 0.5287,
+          "perThousand": 23.38
+        },
+        "CCA": {
+          "fraction": 0.1907,
+          "perThousand": 8.43
+        },
+        "CCT": {
+          "fraction": 0.1572,
+          "perThousand": 6.95
+        },
+        "CCC": {
+          "fraction": 0.1234,
+          "perThousand": 5.46
+        }
+      }
+    },
+    {
+      "id": "b_subtilis",
+      "name": "B. subtilis",
+      "note": "Secreted protein expression",
+      "taxid": 1423,
+      "source": "Bacillus subtilis",
+      "cdsCount": 2529,
+      "codonCount": 815445,
+      "codons": {
+        "GGG": {
+          "fraction": 0.1613,
+          "perThousand": 11.15
+        },
+        "GGA": {
+          "fraction": 0.3148,
+          "perThousand": 21.76
+        },
+        "GGT": {
+          "fraction": 0.1874,
+          "perThousand": 12.96
+        },
+        "GGC": {
+          "fraction": 0.3365,
+          "perThousand": 23.26
+        },
+        "GAG": {
+          "fraction": 0.3197,
+          "perThousand": 22.6
+        },
+        "GAA": {
+          "fraction": 0.6803,
+          "perThousand": 48.09
+        },
+        "GAT": {
+          "fraction": 0.6364,
+          "perThousand": 33.24
+        },
+        "GAC": {
+          "fraction": 0.3636,
+          "perThousand": 18.99
+        },
+        "GTG": {
+          "fraction": 0.2612,
+          "perThousand": 17.3
+        },
+        "GTA": {
+          "fraction": 0.197,
+          "perThousand": 13.05
+        },
+        "GTT": {
+          "fraction": 0.2813,
+          "perThousand": 18.63
+        },
+        "GTC": {
+          "fraction": 0.2605,
+          "perThousand": 17.25
+        },
+        "GCG": {
+          "fraction": 0.2611,
+          "perThousand": 19.84
+        },
+        "GCA": {
+          "fraction": 0.2777,
+          "perThousand": 21.1
+        },
+        "GCT": {
+          "fraction": 0.2445,
+          "perThousand": 18.58
+        },
+        "GCC": {
+          "fraction": 0.2168,
+          "perThousand": 16.47
+        },
+        "AGG": {
+          "fraction": 0.0991,
+          "perThousand": 4.1
+        },
+        "AGA": {
+          "fraction": 0.2538,
+          "perThousand": 10.5
+        },
+        "AGT": {
+          "fraction": 0.1081,
+          "perThousand": 6.84
+        },
+        "AGC": {
+          "fraction": 0.2282,
+          "perThousand": 14.43
+        },
+        "AAG": {
+          "fraction": 0.3011,
+          "perThousand": 20.84
+        },
+        "AAA": {
+          "fraction": 0.6989,
+          "perThousand": 48.38
+        },
+        "AAT": {
+          "fraction": 0.5629,
+          "perThousand": 22.93
+        },
+        "AAC": {
+          "fraction": 0.4371,
+          "perThousand": 17.81
+        },
+        "ATG": {
+          "fraction": 1,
+          "perThousand": 26.27
+        },
+        "ATA": {
+          "fraction": 0.1335,
+          "perThousand": 9.76
+        },
+        "ATT": {
+          "fraction": 0.4946,
+          "perThousand": 36.16
+        },
+        "ATC": {
+          "fraction": 0.3718,
+          "perThousand": 27.18
+        },
+        "ACG": {
+          "fraction": 0.2741,
+          "perThousand": 14.85
+        },
+        "ACA": {
+          "fraction": 0.3994,
+          "perThousand": 21.63
+        },
+        "ACT": {
+          "fraction": 0.1603,
+          "perThousand": 8.68
+        },
+        "ACC": {
+          "fraction": 0.1662,
+          "perThousand": 9
+        },
+        "TGG": {
+          "fraction": 1,
+          "perThousand": 10.75
+        },
+        "TGA": {
+          "fraction": 0.2422,
+          "perThousand": 0.76
+        },
+        "TGT": {
+          "fraction": 0.4584,
+          "perThousand": 3.6
+        },
+        "TGC": {
+          "fraction": 0.5416,
+          "perThousand": 4.26
+        },
+        "TAG": {
+          "fraction": 0.1486,
+          "perThousand": 0.47
+        },
+        "TAA": {
+          "fraction": 0.6092,
+          "perThousand": 1.92
+        },
+        "TAT": {
+          "fraction": 0.6483,
+          "perThousand": 23.26
+        },
+        "TAC": {
+          "fraction": 0.3517,
+          "perThousand": 12.62
+        },
+        "TTG": {
+          "fraction": 0.165,
+          "perThousand": 15.84
+        },
+        "TTA": {
+          "fraction": 0.2065,
+          "perThousand": 19.83
+        },
+        "TTT": {
+          "fraction": 0.6768,
+          "perThousand": 29.98
+        },
+        "TTC": {
+          "fraction": 0.3232,
+          "perThousand": 14.32
+        },
+        "TCG": {
+          "fraction": 0.1021,
+          "perThousand": 6.46
+        },
+        "TCA": {
+          "fraction": 0.2303,
+          "perThousand": 14.56
+        },
+        "TCT": {
+          "fraction": 0.2001,
+          "perThousand": 12.66
+        },
+        "TCC": {
+          "fraction": 0.1312,
+          "perThousand": 8.3
+        },
+        "CGG": {
+          "fraction": 0.1679,
+          "perThousand": 6.95
+        },
+        "CGA": {
+          "fraction": 0.1049,
+          "perThousand": 4.34
+        },
+        "CGT": {
+          "fraction": 0.175,
+          "perThousand": 7.24
+        },
+        "CGC": {
+          "fraction": 0.1993,
+          "perThousand": 8.24
+        },
+        "CAG": {
+          "fraction": 0.4759,
+          "perThousand": 18.5
+        },
+        "CAA": {
+          "fraction": 0.5241,
+          "perThousand": 20.38
+        },
+        "CAT": {
+          "fraction": 0.6763,
+          "perThousand": 15.74
+        },
+        "CAC": {
+          "fraction": 0.3237,
+          "perThousand": 7.53
+        },
+        "CTG": {
+          "fraction": 0.2396,
+          "perThousand": 23
+        },
+        "CTA": {
+          "fraction": 0.0508,
+          "perThousand": 4.87
+        },
+        "CTT": {
+          "fraction": 0.227,
+          "perThousand": 21.79
+        },
+        "CTC": {
+          "fraction": 0.1111,
+          "perThousand": 10.67
+        },
+        "CCG": {
+          "fraction": 0.4351,
+          "perThousand": 16.33
+        },
+        "CCA": {
+          "fraction": 0.1894,
+          "perThousand": 7.11
+        },
+        "CCT": {
+          "fraction": 0.2823,
+          "perThousand": 10.6
+        },
+        "CCC": {
+          "fraction": 0.0931,
+          "perThousand": 3.5
+        }
+      }
+    },
+    {
+      "id": "s_cerevisiae",
+      "name": "S. cerevisiae",
+      "note": "Baker's yeast",
+      "taxid": 4932,
+      "source": "Saccharomyces cerevisiae",
+      "cdsCount": 14411,
+      "codonCount": 6534504,
+      "codons": {
+        "GGG": {
+          "fraction": 0.1191,
+          "perThousand": 6.02
+        },
+        "GGA": {
+          "fraction": 0.2154,
+          "perThousand": 10.9
+        },
+        "GGT": {
+          "fraction": 0.4722,
+          "perThousand": 23.89
+        },
+        "GGC": {
+          "fraction": 0.1933,
+          "perThousand": 9.78
+        },
+        "GAG": {
+          "fraction": 0.2967,
+          "perThousand": 19.24
+        },
+        "GAA": {
+          "fraction": 0.7033,
+          "perThousand": 45.6
+        },
+        "GAT": {
+          "fraction": 0.6504,
+          "perThousand": 37.59
+        },
+        "GAC": {
+          "fraction": 0.3496,
+          "perThousand": 20.21
+        },
+        "GTG": {
+          "fraction": 0.1909,
+          "perThousand": 10.76
+        },
+        "GTA": {
+          "fraction": 0.2088,
+          "perThousand": 11.77
+        },
+        "GTT": {
+          "fraction": 0.3915,
+          "perThousand": 22.07
+        },
+        "GTC": {
+          "fraction": 0.2088,
+          "perThousand": 11.78
+        },
+        "GCG": {
+          "fraction": 0.11,
+          "perThousand": 6.18
+        },
+        "GCA": {
+          "fraction": 0.2886,
+          "perThousand": 16.21
+        },
+        "GCT": {
+          "fraction": 0.377,
+          "perThousand": 21.17
+        },
+        "GCC": {
+          "fraction": 0.2244,
+          "perThousand": 12.6
+        },
+        "AGG": {
+          "fraction": 0.2086,
+          "perThousand": 9.23
+        },
+        "AGA": {
+          "fraction": 0.4811,
+          "perThousand": 21.28
+        },
+        "AGT": {
+          "fraction": 0.1592,
+          "perThousand": 14.15
+        },
+        "AGC": {
+          "fraction": 0.1097,
+          "perThousand": 9.75
+        },
+        "AAG": {
+          "fraction": 0.4239,
+          "perThousand": 30.82
+        },
+        "AAA": {
+          "fraction": 0.5761,
+          "perThousand": 41.87
+        },
+        "AAT": {
+          "fraction": 0.5897,
+          "perThousand": 35.68
+        },
+        "AAC": {
+          "fraction": 0.4103,
+          "perThousand": 24.82
+        },
+        "ATG": {
+          "fraction": 1,
+          "perThousand": 20.94
+        },
+        "ATA": {
+          "fraction": 0.2733,
+          "perThousand": 17.79
+        },
+        "ATT": {
+          "fraction": 0.4629,
+          "perThousand": 30.13
+        },
+        "ATC": {
+          "fraction": 0.2637,
+          "perThousand": 17.17
+        },
+        "ACG": {
+          "fraction": 0.1356,
+          "perThousand": 7.96
+        },
+        "ACA": {
+          "fraction": 0.3024,
+          "perThousand": 17.76
+        },
+        "ACT": {
+          "fraction": 0.3452,
+          "perThousand": 20.28
+        },
+        "ACC": {
+          "fraction": 0.2168,
+          "perThousand": 12.73
+        },
+        "TGG": {
+          "fraction": 1,
+          "perThousand": 10.37
+        },
+        "TGA": {
+          "fraction": 0.3031,
+          "perThousand": 0.68
+        },
+        "TGT": {
+          "fraction": 0.6298,
+          "perThousand": 8.1
+        },
+        "TGC": {
+          "fraction": 0.3702,
+          "perThousand": 4.76
+        },
+        "TAG": {
+          "fraction": 0.2257,
+          "perThousand": 0.51
+        },
+        "TAA": {
+          "fraction": 0.4712,
+          "perThousand": 1.06
+        },
+        "TAT": {
+          "fraction": 0.5596,
+          "perThousand": 18.78
+        },
+        "TAC": {
+          "fraction": 0.4404,
+          "perThousand": 14.78
+        },
+        "TTG": {
+          "fraction": 0.2863,
+          "perThousand": 27.17
+        },
+        "TTA": {
+          "fraction": 0.2755,
+          "perThousand": 26.15
+        },
+        "TTT": {
+          "fraction": 0.5861,
+          "perThousand": 26.12
+        },
+        "TTC": {
+          "fraction": 0.4139,
+          "perThousand": 18.44
+        },
+        "TCG": {
+          "fraction": 0.0964,
+          "perThousand": 8.56
+        },
+        "TCA": {
+          "fraction": 0.2102,
+          "perThousand": 18.67
+        },
+        "TCT": {
+          "fraction": 0.2645,
+          "perThousand": 23.5
+        },
+        "TCC": {
+          "fraction": 0.16,
+          "perThousand": 14.22
+        },
+        "CGG": {
+          "fraction": 0.0393,
+          "perThousand": 1.74
+        },
+        "CGA": {
+          "fraction": 0.0677,
+          "perThousand": 2.99
+        },
+        "CGT": {
+          "fraction": 0.1446,
+          "perThousand": 6.4
+        },
+        "CGC": {
+          "fraction": 0.0588,
+          "perThousand": 2.6
+        },
+        "CAG": {
+          "fraction": 0.3074,
+          "perThousand": 12.11
+        },
+        "CAA": {
+          "fraction": 0.6926,
+          "perThousand": 27.28
+        },
+        "CAT": {
+          "fraction": 0.6367,
+          "perThousand": 13.62
+        },
+        "CAC": {
+          "fraction": 0.3633,
+          "perThousand": 7.77
+        },
+        "CTG": {
+          "fraction": 0.1104,
+          "perThousand": 10.48
+        },
+        "CTA": {
+          "fraction": 0.1413,
+          "perThousand": 13.41
+        },
+        "CTT": {
+          "fraction": 0.1291,
+          "perThousand": 12.25
+        },
+        "CTC": {
+          "fraction": 0.0573,
+          "perThousand": 5.44
+        },
+        "CCG": {
+          "fraction": 0.1206,
+          "perThousand": 5.29
+        },
+        "CCA": {
+          "fraction": 0.4171,
+          "perThousand": 18.31
+        },
+        "CCT": {
+          "fraction": 0.3077,
+          "perThousand": 13.51
+        },
+        "CCC": {
+          "fraction": 0.1545,
+          "perThousand": 6.78
+        }
+      }
+    },
+    {
+      "id": "p_pastoris",
+      "name": "P. pastoris",
+      "note": "Komagataella phaffii; methylotrophic yeast",
+      "taxid": 4922,
+      "source": "Pichia pastoris",
+      "cdsCount": 137,
+      "codonCount": 81301,
+      "codons": {
+        "GGG": {
+          "fraction": 0.0986,
+          "perThousand": 5.76
+        },
+        "GGA": {
+          "fraction": 0.3265,
+          "perThousand": 19.06
+        },
+        "GGT": {
+          "fraction": 0.437,
+          "perThousand": 25.52
+        },
+        "GGC": {
+          "fraction": 0.138,
+          "perThousand": 8.06
+        },
+        "GAG": {
+          "fraction": 0.4368,
+          "perThousand": 29.03
+        },
+        "GAA": {
+          "fraction": 0.5632,
+          "perThousand": 37.43
+        },
+        "GAT": {
+          "fraction": 0.5796,
+          "perThousand": 35.66
+        },
+        "GAC": {
+          "fraction": 0.4204,
+          "perThousand": 25.87
+        },
+        "GTG": {
+          "fraction": 0.1919,
+          "perThousand": 12.28
+        },
+        "GTA": {
+          "fraction": 0.1546,
+          "perThousand": 9.89
+        },
+        "GTT": {
+          "fraction": 0.4208,
+          "perThousand": 26.91
+        },
+        "GTC": {
+          "fraction": 0.2327,
+          "perThousand": 14.88
+        },
+        "GCG": {
+          "fraction": 0.0599,
+          "perThousand": 3.86
+        },
+        "GCA": {
+          "fraction": 0.2343,
+          "perThousand": 15.1
+        },
+        "GCT": {
+          "fraction": 0.4486,
+          "perThousand": 28.92
+        },
+        "GCC": {
+          "fraction": 0.2572,
+          "perThousand": 16.58
+        },
+        "AGG": {
+          "fraction": 0.1581,
+          "perThousand": 6.63
+        },
+        "AGA": {
+          "fraction": 0.4792,
+          "perThousand": 20.1
+        },
+        "AGT": {
+          "fraction": 0.15,
+          "perThousand": 12.55
+        },
+        "AGC": {
+          "fraction": 0.0913,
+          "perThousand": 7.64
+        },
+        "AAG": {
+          "fraction": 0.5304,
+          "perThousand": 33.8
+        },
+        "AAA": {
+          "fraction": 0.4696,
+          "perThousand": 29.93
+        },
+        "AAT": {
+          "fraction": 0.4845,
+          "perThousand": 25.07
+        },
+        "AAC": {
+          "fraction": 0.5155,
+          "perThousand": 26.67
+        },
+        "ATG": {
+          "fraction": 1,
+          "perThousand": 18.66
+        },
+        "ATA": {
+          "fraction": 0.1806,
+          "perThousand": 11.14
+        },
+        "ATT": {
+          "fraction": 0.5046,
+          "perThousand": 31.14
+        },
+        "ATC": {
+          "fraction": 0.3149,
+          "perThousand": 19.43
+        },
+        "ACG": {
+          "fraction": 0.1066,
+          "perThousand": 6.04
+        },
+        "ACA": {
+          "fraction": 0.2428,
+          "perThousand": 13.75
+        },
+        "ACT": {
+          "fraction": 0.3953,
+          "perThousand": 22.39
+        },
+        "ACC": {
+          "fraction": 0.2552,
+          "perThousand": 14.45
+        },
+        "TGG": {
+          "fraction": 1,
+          "perThousand": 10.26
+        },
+        "TGA": {
+          "fraction": 0.1985,
+          "perThousand": 0.33
+        },
+        "TGT": {
+          "fraction": 0.6375,
+          "perThousand": 7.7
+        },
+        "TGC": {
+          "fraction": 0.3625,
+          "perThousand": 4.38
+        },
+        "TAG": {
+          "fraction": 0.2941,
+          "perThousand": 0.49
+        },
+        "TAA": {
+          "fraction": 0.5074,
+          "perThousand": 0.85
+        },
+        "TAT": {
+          "fraction": 0.4688,
+          "perThousand": 15.99
+        },
+        "TAC": {
+          "fraction": 0.5312,
+          "perThousand": 18.12
+        },
+        "TTG": {
+          "fraction": 0.3275,
+          "perThousand": 31.51
+        },
+        "TTA": {
+          "fraction": 0.1617,
+          "perThousand": 15.56
+        },
+        "TTT": {
+          "fraction": 0.5396,
+          "perThousand": 24.14
+        },
+        "TTC": {
+          "fraction": 0.4604,
+          "perThousand": 20.6
+        },
+        "TCG": {
+          "fraction": 0.0879,
+          "perThousand": 7.36
+        },
+        "TCA": {
+          "fraction": 0.1815,
+          "perThousand": 15.18
+        },
+        "TCT": {
+          "fraction": 0.2916,
+          "perThousand": 24.39
+        },
+        "TCC": {
+          "fraction": 0.1976,
+          "perThousand": 16.53
+        },
+        "CGG": {
+          "fraction": 0.0463,
+          "perThousand": 1.94
+        },
+        "CGA": {
+          "fraction": 0.0997,
+          "perThousand": 4.18
+        },
+        "CGT": {
+          "fraction": 0.1654,
+          "perThousand": 6.94
+        },
+        "CGC": {
+          "fraction": 0.0513,
+          "perThousand": 2.15
+        },
+        "CAG": {
+          "fraction": 0.39,
+          "perThousand": 16.27
+        },
+        "CAA": {
+          "fraction": 0.61,
+          "perThousand": 25.45
+        },
+        "CAT": {
+          "fraction": 0.5657,
+          "perThousand": 11.81
+        },
+        "CAC": {
+          "fraction": 0.4343,
+          "perThousand": 9.07
+        },
+        "CTG": {
+          "fraction": 0.1553,
+          "perThousand": 14.94
+        },
+        "CTA": {
+          "fraction": 0.1116,
+          "perThousand": 10.74
+        },
+        "CTT": {
+          "fraction": 0.1647,
+          "perThousand": 15.85
+        },
+        "CTC": {
+          "fraction": 0.0792,
+          "perThousand": 7.63
+        },
+        "CCG": {
+          "fraction": 0.0866,
+          "perThousand": 3.94
+        },
+        "CCA": {
+          "fraction": 0.4168,
+          "perThousand": 18.94
+        },
+        "CCT": {
+          "fraction": 0.347,
+          "perThousand": 15.77
+        },
+        "CCC": {
+          "fraction": 0.1497,
+          "perThousand": 6.8
+        }
+      }
+    },
+    {
+      "id": "h_sapiens",
+      "name": "H. sapiens",
+      "note": "HEK293 and other human cell lines",
+      "taxid": 9606,
+      "source": "Homo sapiens",
+      "cdsCount": 93487,
+      "codonCount": 40662582,
+      "codons": {
+        "GGG": {
+          "fraction": 0.2499,
+          "perThousand": 16.47
+        },
+        "GGA": {
+          "fraction": 0.2499,
+          "perThousand": 16.47
+        },
+        "GGT": {
+          "fraction": 0.1631,
+          "perThousand": 10.75
+        },
+        "GGC": {
+          "fraction": 0.3371,
+          "perThousand": 22.22
+        },
+        "GAG": {
+          "fraction": 0.5775,
+          "perThousand": 39.59
+        },
+        "GAA": {
+          "fraction": 0.4225,
+          "perThousand": 28.96
+        },
+        "GAT": {
+          "fraction": 0.4645,
+          "perThousand": 21.78
+        },
+        "GAC": {
+          "fraction": 0.5355,
+          "perThousand": 25.1
+        },
+        "GTG": {
+          "fraction": 0.4633,
+          "perThousand": 28.12
+        },
+        "GTA": {
+          "fraction": 0.1166,
+          "perThousand": 7.08
+        },
+        "GTT": {
+          "fraction": 0.1818,
+          "perThousand": 11.03
+        },
+        "GTC": {
+          "fraction": 0.2383,
+          "perThousand": 14.46
+        },
+        "GCG": {
+          "fraction": 0.1062,
+          "perThousand": 7.37
+        },
+        "GCA": {
+          "fraction": 0.2281,
+          "perThousand": 15.82
+        },
+        "GCT": {
+          "fraction": 0.2659,
+          "perThousand": 18.45
+        },
+        "GCC": {
+          "fraction": 0.3998,
+          "perThousand": 27.73
+        },
+        "AGG": {
+          "fraction": 0.2111,
+          "perThousand": 11.96
+        },
+        "AGA": {
+          "fraction": 0.2147,
+          "perThousand": 12.17
+        },
+        "AGT": {
+          "fraction": 0.1496,
+          "perThousand": 12.13
+        },
+        "AGC": {
+          "fraction": 0.2399,
+          "perThousand": 19.46
+        },
+        "AAG": {
+          "fraction": 0.566,
+          "perThousand": 31.86
+        },
+        "AAA": {
+          "fraction": 0.434,
+          "perThousand": 24.44
+        },
+        "AAT": {
+          "fraction": 0.4704,
+          "perThousand": 16.96
+        },
+        "AAC": {
+          "fraction": 0.5296,
+          "perThousand": 19.1
+        },
+        "ATG": {
+          "fraction": 1,
+          "perThousand": 22.04
+        },
+        "ATA": {
+          "fraction": 0.1691,
+          "perThousand": 7.49
+        },
+        "ATT": {
+          "fraction": 0.3611,
+          "perThousand": 16
+        },
+        "ATC": {
+          "fraction": 0.4699,
+          "perThousand": 20.82
+        },
+        "ACG": {
+          "fraction": 0.1138,
+          "perThousand": 6.05
+        },
+        "ACA": {
+          "fraction": 0.2842,
+          "perThousand": 15.11
+        },
+        "ACT": {
+          "fraction": 0.2468,
+          "perThousand": 13.12
+        },
+        "ACC": {
+          "fraction": 0.3552,
+          "perThousand": 18.89
+        },
+        "TGG": {
+          "fraction": 1,
+          "perThousand": 13.17
+        },
+        "TGA": {
+          "fraction": 0.4662,
+          "perThousand": 1.56
+        },
+        "TGT": {
+          "fraction": 0.4562,
+          "perThousand": 10.58
+        },
+        "TGC": {
+          "fraction": 0.5438,
+          "perThousand": 12.62
+        },
+        "TAG": {
+          "fraction": 0.2367,
+          "perThousand": 0.79
+        },
+        "TAA": {
+          "fraction": 0.297,
+          "perThousand": 0.99
+        },
+        "TAT": {
+          "fraction": 0.4433,
+          "perThousand": 12.19
+        },
+        "TAC": {
+          "fraction": 0.5567,
+          "perThousand": 15.31
+        },
+        "TTG": {
+          "fraction": 0.1291,
+          "perThousand": 12.93
+        },
+        "TTA": {
+          "fraction": 0.0766,
+          "perThousand": 7.67
+        },
+        "TTT": {
+          "fraction": 0.4641,
+          "perThousand": 17.57
+        },
+        "TTC": {
+          "fraction": 0.5359,
+          "perThousand": 20.28
+        },
+        "TCG": {
+          "fraction": 0.0544,
+          "perThousand": 4.41
+        },
+        "TCA": {
+          "fraction": 0.1505,
+          "perThousand": 12.21
+        },
+        "TCT": {
+          "fraction": 0.1876,
+          "perThousand": 15.22
+        },
+        "TCC": {
+          "fraction": 0.218,
+          "perThousand": 17.68
+        },
+        "CGG": {
+          "fraction": 0.2016,
+          "perThousand": 11.42
+        },
+        "CGA": {
+          "fraction": 0.1088,
+          "perThousand": 6.17
+        },
+        "CGT": {
+          "fraction": 0.0801,
+          "perThousand": 4.54
+        },
+        "CGC": {
+          "fraction": 0.1838,
+          "perThousand": 10.42
+        },
+        "CAG": {
+          "fraction": 0.735,
+          "perThousand": 34.23
+        },
+        "CAA": {
+          "fraction": 0.265,
+          "perThousand": 12.34
+        },
+        "CAT": {
+          "fraction": 0.4185,
+          "perThousand": 10.86
+        },
+        "CAC": {
+          "fraction": 0.5815,
+          "perThousand": 15.09
+        },
+        "CTG": {
+          "fraction": 0.3957,
+          "perThousand": 39.64
+        },
+        "CTA": {
+          "fraction": 0.0714,
+          "perThousand": 7.15
+        },
+        "CTT": {
+          "fraction": 0.1317,
+          "perThousand": 13.19
+        },
+        "CTC": {
+          "fraction": 0.1956,
+          "perThousand": 19.59
+        },
+        "CCG": {
+          "fraction": 0.1132,
+          "perThousand": 6.92
+        },
+        "CCA": {
+          "fraction": 0.2766,
+          "perThousand": 16.92
+        },
+        "CCT": {
+          "fraction": 0.2867,
+          "perThousand": 17.54
+        },
+        "CCC": {
+          "fraction": 0.3235,
+          "perThousand": 19.79
+        }
+      }
+    },
+    {
+      "id": "cho",
+      "name": "CHO (C. griseus)",
+      "note": "Chinese hamster ovary; biologics manufacturing",
+      "taxid": 10029,
+      "source": "Cricetulus griseus",
+      "cdsCount": 331,
+      "codonCount": 153527,
+      "codons": {
+        "GGG": {
+          "fraction": 0.2122,
+          "perThousand": 13.44
+        },
+        "GGA": {
+          "fraction": 0.2494,
+          "perThousand": 15.8
+        },
+        "GGT": {
+          "fraction": 0.2024,
+          "perThousand": 12.82
+        },
+        "GGC": {
+          "fraction": 0.3361,
+          "perThousand": 21.29
+        },
+        "GAG": {
+          "fraction": 0.5917,
+          "perThousand": 41.11
+        },
+        "GAA": {
+          "fraction": 0.4083,
+          "perThousand": 28.37
+        },
+        "GAT": {
+          "fraction": 0.4673,
+          "perThousand": 24.63
+        },
+        "GAC": {
+          "fraction": 0.5327,
+          "perThousand": 28.07
+        },
+        "GTG": {
+          "fraction": 0.462,
+          "perThousand": 30.14
+        },
+        "GTA": {
+          "fraction": 0.12,
+          "perThousand": 7.83
+        },
+        "GTT": {
+          "fraction": 0.1777,
+          "perThousand": 11.59
+        },
+        "GTC": {
+          "fraction": 0.2404,
+          "perThousand": 15.68
+        },
+        "GCG": {
+          "fraction": 0.0717,
+          "perThousand": 4.98
+        },
+        "GCA": {
+          "fraction": 0.2341,
+          "perThousand": 16.26
+        },
+        "GCT": {
+          "fraction": 0.3217,
+          "perThousand": 22.35
+        },
+        "GCC": {
+          "fraction": 0.3725,
+          "perThousand": 25.88
+        },
+        "AGG": {
+          "fraction": 0.1943,
+          "perThousand": 10.23
+        },
+        "AGA": {
+          "fraction": 0.1927,
+          "perThousand": 10.14
+        },
+        "AGT": {
+          "fraction": 0.1546,
+          "perThousand": 11.44
+        },
+        "AGC": {
+          "fraction": 0.2219,
+          "perThousand": 16.42
+        },
+        "AAG": {
+          "fraction": 0.6092,
+          "perThousand": 38.4
+        },
+        "AAA": {
+          "fraction": 0.3908,
+          "perThousand": 24.63
+        },
+        "AAT": {
+          "fraction": 0.4513,
+          "perThousand": 17.4
+        },
+        "AAC": {
+          "fraction": 0.5487,
+          "perThousand": 21.16
+        },
+        "ATG": {
+          "fraction": 1,
+          "perThousand": 23.04
+        },
+        "ATA": {
+          "fraction": 0.1398,
+          "perThousand": 6.86
+        },
+        "ATT": {
+          "fraction": 0.3548,
+          "perThousand": 17.41
+        },
+        "ATC": {
+          "fraction": 0.5054,
+          "perThousand": 24.8
+        },
+        "ACG": {
+          "fraction": 0.0816,
+          "perThousand": 4.46
+        },
+        "ACA": {
+          "fraction": 0.2881,
+          "perThousand": 15.75
+        },
+        "ACT": {
+          "fraction": 0.2588,
+          "perThousand": 14.15
+        },
+        "ACC": {
+          "fraction": 0.3715,
+          "perThousand": 20.31
+        },
+        "TGG": {
+          "fraction": 1,
+          "perThousand": 13.11
+        },
+        "TGA": {
+          "fraction": 0.5,
+          "perThousand": 1.15
+        },
+        "TGT": {
+          "fraction": 0.4678,
+          "perThousand": 9.1
+        },
+        "TGC": {
+          "fraction": 0.5322,
+          "perThousand": 10.35
+        },
+        "TAG": {
+          "fraction": 0.2373,
+          "perThousand": 0.55
+        },
+        "TAA": {
+          "fraction": 0.2627,
+          "perThousand": 0.61
+        },
+        "TAT": {
+          "fraction": 0.4447,
+          "perThousand": 13.14
+        },
+        "TAC": {
+          "fraction": 0.5553,
+          "perThousand": 16.41
+        },
+        "TTG": {
+          "fraction": 0.1435,
+          "perThousand": 14.13
+        },
+        "TTA": {
+          "fraction": 0.0647,
+          "perThousand": 6.37
+        },
+        "TTT": {
+          "fraction": 0.4706,
+          "perThousand": 19.57
+        },
+        "TTC": {
+          "fraction": 0.5294,
+          "perThousand": 22.02
+        },
+        "TCG": {
+          "fraction": 0.0466,
+          "perThousand": 3.45
+        },
+        "TCA": {
+          "fraction": 0.1388,
+          "perThousand": 10.27
+        },
+        "TCT": {
+          "fraction": 0.2156,
+          "perThousand": 15.96
+        },
+        "TCC": {
+          "fraction": 0.2226,
+          "perThousand": 16.47
+        },
+        "CGG": {
+          "fraction": 0.1928,
+          "perThousand": 10.15
+        },
+        "CGA": {
+          "fraction": 0.1364,
+          "perThousand": 7.18
+        },
+        "CGT": {
+          "fraction": 0.1068,
+          "perThousand": 5.62
+        },
+        "CGC": {
+          "fraction": 0.1769,
+          "perThousand": 9.31
+        },
+        "CAG": {
+          "fraction": 0.7635,
+          "perThousand": 33.36
+        },
+        "CAA": {
+          "fraction": 0.2365,
+          "perThousand": 10.34
+        },
+        "CAT": {
+          "fraction": 0.4412,
+          "perThousand": 10.18
+        },
+        "CAC": {
+          "fraction": 0.5588,
+          "perThousand": 12.9
+        },
+        "CTG": {
+          "fraction": 0.3939,
+          "perThousand": 38.79
+        },
+        "CTA": {
+          "fraction": 0.0777,
+          "perThousand": 7.65
+        },
+        "CTT": {
+          "fraction": 0.1338,
+          "perThousand": 13.18
+        },
+        "CTC": {
+          "fraction": 0.1864,
+          "perThousand": 18.36
+        },
+        "CCG": {
+          "fraction": 0.08,
+          "perThousand": 4.28
+        },
+        "CCA": {
+          "fraction": 0.2907,
+          "perThousand": 15.55
+        },
+        "CCT": {
+          "fraction": 0.312,
+          "perThousand": 16.69
+        },
+        "CCC": {
+          "fraction": 0.3174,
+          "perThousand": 16.99
+        }
+      }
+    },
+    {
+      "id": "m_musculus",
+      "name": "M. musculus",
+      "note": "Mouse cell lines",
+      "taxid": 10090,
+      "source": "Mus musculus",
+      "cdsCount": 53036,
+      "codonCount": 24533776,
+      "codons": {
+        "GGG": {
+          "fraction": 0.2349,
+          "perThousand": 15.17
+        },
+        "GGA": {
+          "fraction": 0.2597,
+          "perThousand": 16.77
+        },
+        "GGT": {
+          "fraction": 0.1771,
+          "perThousand": 11.43
+        },
+        "GGC": {
+          "fraction": 0.3283,
+          "perThousand": 21.2
+        },
+        "GAG": {
+          "fraction": 0.5935,
+          "perThousand": 39.37
+        },
+        "GAA": {
+          "fraction": 0.4065,
+          "perThousand": 26.96
+        },
+        "GAT": {
+          "fraction": 0.4465,
+          "perThousand": 20.99
+        },
+        "GAC": {
+          "fraction": 0.5535,
+          "perThousand": 26.03
+        },
+        "GTG": {
+          "fraction": 0.4582,
+          "perThousand": 28.38
+        },
+        "GTA": {
+          "fraction": 0.1203,
+          "perThousand": 7.45
+        },
+        "GTT": {
+          "fraction": 0.1728,
+          "perThousand": 10.7
+        },
+        "GTC": {
+          "fraction": 0.2487,
+          "perThousand": 15.4
+        },
+        "GCG": {
+          "fraction": 0.0938,
+          "perThousand": 6.4
+        },
+        "GCA": {
+          "fraction": 0.2321,
+          "perThousand": 15.84
+        },
+        "GCT": {
+          "fraction": 0.2932,
+          "perThousand": 20.02
+        },
+        "GCC": {
+          "fraction": 0.3809,
+          "perThousand": 26
+        },
+        "AGG": {
+          "fraction": 0.2213,
+          "perThousand": 12.21
+        },
+        "AGA": {
+          "fraction": 0.2195,
+          "perThousand": 12.11
+        },
+        "AGT": {
+          "fraction": 0.1533,
+          "perThousand": 12.69
+        },
+        "AGC": {
+          "fraction": 0.2379,
+          "perThousand": 19.69
+        },
+        "AAG": {
+          "fraction": 0.6055,
+          "perThousand": 33.64
+        },
+        "AAA": {
+          "fraction": 0.3945,
+          "perThousand": 21.92
+        },
+        "AAT": {
+          "fraction": 0.4337,
+          "perThousand": 15.58
+        },
+        "AAC": {
+          "fraction": 0.5663,
+          "perThousand": 20.35
+        },
+        "ATG": {
+          "fraction": 1,
+          "perThousand": 22.82
+        },
+        "ATA": {
+          "fraction": 0.1625,
+          "perThousand": 7.36
+        },
+        "ATT": {
+          "fraction": 0.3402,
+          "perThousand": 15.4
+        },
+        "ATC": {
+          "fraction": 0.4973,
+          "perThousand": 22.51
+        },
+        "ACG": {
+          "fraction": 0.1039,
+          "perThousand": 5.63
+        },
+        "ACA": {
+          "fraction": 0.2944,
+          "perThousand": 15.96
+        },
+        "ACT": {
+          "fraction": 0.252,
+          "perThousand": 13.66
+        },
+        "ACC": {
+          "fraction": 0.3498,
+          "perThousand": 18.96
+        },
+        "TGG": {
+          "fraction": 1,
+          "perThousand": 12.5
+        },
+        "TGA": {
+          "fraction": 0.4856,
+          "perThousand": 1.64
+        },
+        "TGT": {
+          "fraction": 0.4814,
+          "perThousand": 11.4
+        },
+        "TGC": {
+          "fraction": 0.5186,
+          "perThousand": 12.28
+        },
+        "TAG": {
+          "fraction": 0.2313,
+          "perThousand": 0.78
+        },
+        "TAA": {
+          "fraction": 0.2831,
+          "perThousand": 0.95
+        },
+        "TAT": {
+          "fraction": 0.431,
+          "perThousand": 12.17
+        },
+        "TAC": {
+          "fraction": 0.569,
+          "perThousand": 16.06
+        },
+        "TTG": {
+          "fraction": 0.1325,
+          "perThousand": 13.44
+        },
+        "TTA": {
+          "fraction": 0.0664,
+          "perThousand": 6.73
+        },
+        "TTT": {
+          "fraction": 0.4408,
+          "perThousand": 17.21
+        },
+        "TTC": {
+          "fraction": 0.5592,
+          "perThousand": 21.82
+        },
+        "TCG": {
+          "fraction": 0.0511,
+          "perThousand": 4.23
+        },
+        "TCA": {
+          "fraction": 0.1427,
+          "perThousand": 11.81
+        },
+        "TCT": {
+          "fraction": 0.1962,
+          "perThousand": 16.23
+        },
+        "TCC": {
+          "fraction": 0.2187,
+          "perThousand": 18.1
+        },
+        "CGG": {
+          "fraction": 0.1853,
+          "perThousand": 10.22
+        },
+        "CGA": {
+          "fraction": 0.1193,
+          "perThousand": 6.58
+        },
+        "CGT": {
+          "fraction": 0.0849,
+          "perThousand": 4.68
+        },
+        "CGC": {
+          "fraction": 0.1698,
+          "perThousand": 9.36
+        },
+        "CAG": {
+          "fraction": 0.7403,
+          "perThousand": 34.09
+        },
+        "CAA": {
+          "fraction": 0.2597,
+          "perThousand": 11.96
+        },
+        "CAT": {
+          "fraction": 0.4096,
+          "perThousand": 10.62
+        },
+        "CAC": {
+          "fraction": 0.5904,
+          "perThousand": 15.31
+        },
+        "CTG": {
+          "fraction": 0.3898,
+          "perThousand": 39.52
+        },
+        "CTA": {
+          "fraction": 0.0796,
+          "perThousand": 8.07
+        },
+        "CTT": {
+          "fraction": 0.1326,
+          "perThousand": 13.44
+        },
+        "CTC": {
+          "fraction": 0.199,
+          "perThousand": 20.18
+        },
+        "CCG": {
+          "fraction": 0.1029,
+          "perThousand": 6.18
+        },
+        "CCA": {
+          "fraction": 0.2877,
+          "perThousand": 17.27
+        },
+        "CCT": {
+          "fraction": 0.306,
+          "perThousand": 18.37
+        },
+        "CCC": {
+          "fraction": 0.3034,
+          "perThousand": 18.21
+        }
+      }
+    },
+    {
+      "id": "sf9",
+      "name": "Sf9 (S. frugiperda)",
+      "note": "Baculovirus insect expression",
+      "taxid": 7108,
+      "source": "Spodoptera frugiperda",
+      "cdsCount": 142,
+      "codonCount": 38777,
+      "codons": {
+        "GGG": {
+          "fraction": 0.0727,
+          "perThousand": 4.62
+        },
+        "GGA": {
+          "fraction": 0.2801,
+          "perThousand": 17.79
+        },
+        "GGT": {
+          "fraction": 0.3382,
+          "perThousand": 21.48
+        },
+        "GGC": {
+          "fraction": 0.309,
+          "perThousand": 19.63
+        },
+        "GAG": {
+          "fraction": 0.5456,
+          "perThousand": 33.14
+        },
+        "GAA": {
+          "fraction": 0.4544,
+          "perThousand": 27.59
+        },
+        "GAT": {
+          "fraction": 0.396,
+          "perThousand": 21.89
+        },
+        "GAC": {
+          "fraction": 0.604,
+          "perThousand": 33.4
+        },
+        "GTG": {
+          "fraction": 0.3434,
+          "perThousand": 24.14
+        },
+        "GTA": {
+          "fraction": 0.1709,
+          "perThousand": 12.02
+        },
+        "GTT": {
+          "fraction": 0.2003,
+          "perThousand": 14.08
+        },
+        "GTC": {
+          "fraction": 0.2854,
+          "perThousand": 20.06
+        },
+        "GCG": {
+          "fraction": 0.1752,
+          "perThousand": 12.35
+        },
+        "GCA": {
+          "fraction": 0.1818,
+          "perThousand": 12.82
+        },
+        "GCT": {
+          "fraction": 0.3486,
+          "perThousand": 24.58
+        },
+        "GCC": {
+          "fraction": 0.2944,
+          "perThousand": 20.76
+        },
+        "AGG": {
+          "fraction": 0.1942,
+          "perThousand": 12.56
+        },
+        "AGA": {
+          "fraction": 0.1866,
+          "perThousand": 12.07
+        },
+        "AGT": {
+          "fraction": 0.1369,
+          "perThousand": 8.36
+        },
+        "AGC": {
+          "fraction": 0.1817,
+          "perThousand": 11.09
+        },
+        "AAG": {
+          "fraction": 0.6474,
+          "perThousand": 49.2
+        },
+        "AAA": {
+          "fraction": 0.3526,
+          "perThousand": 26.79
+        },
+        "AAT": {
+          "fraction": 0.318,
+          "perThousand": 13.41
+        },
+        "AAC": {
+          "fraction": 0.682,
+          "perThousand": 28.75
+        },
+        "ATG": {
+          "fraction": 1,
+          "perThousand": 27.03
+        },
+        "ATA": {
+          "fraction": 0.1597,
+          "perThousand": 8.33
+        },
+        "ATT": {
+          "fraction": 0.2967,
+          "perThousand": 15.47
+        },
+        "ATC": {
+          "fraction": 0.5435,
+          "perThousand": 28.34
+        },
+        "ACG": {
+          "fraction": 0.1772,
+          "perThousand": 9.44
+        },
+        "ACA": {
+          "fraction": 0.2314,
+          "perThousand": 12.33
+        },
+        "ACT": {
+          "fraction": 0.2682,
+          "perThousand": 14.29
+        },
+        "ACC": {
+          "fraction": 0.3233,
+          "perThousand": 17.23
+        },
+        "TGG": {
+          "fraction": 1,
+          "perThousand": 13.31
+        },
+        "TGA": {
+          "fraction": 0.1831,
+          "perThousand": 0.67
+        },
+        "TGT": {
+          "fraction": 0.3915,
+          "perThousand": 8.51
+        },
+        "TGC": {
+          "fraction": 0.6085,
+          "perThousand": 13.23
+        },
+        "TAG": {
+          "fraction": 0.1831,
+          "perThousand": 0.67
+        },
+        "TAA": {
+          "fraction": 0.6338,
+          "perThousand": 2.32
+        },
+        "TAT": {
+          "fraction": 0.2916,
+          "perThousand": 10.03
+        },
+        "TAC": {
+          "fraction": 0.7084,
+          "perThousand": 24.37
+        },
+        "TTG": {
+          "fraction": 0.1956,
+          "perThousand": 15.91
+        },
+        "TTA": {
+          "fraction": 0.0951,
+          "perThousand": 7.74
+        },
+        "TTT": {
+          "fraction": 0.2685,
+          "perThousand": 10.11
+        },
+        "TTC": {
+          "fraction": 0.7315,
+          "perThousand": 27.54
+        },
+        "TCG": {
+          "fraction": 0.1267,
+          "perThousand": 7.74
+        },
+        "TCA": {
+          "fraction": 0.1732,
+          "perThousand": 10.57
+        },
+        "TCT": {
+          "fraction": 0.1745,
+          "perThousand": 10.65
+        },
+        "TCC": {
+          "fraction": 0.207,
+          "perThousand": 12.64
+        },
+        "CGG": {
+          "fraction": 0.0578,
+          "perThousand": 3.74
+        },
+        "CGA": {
+          "fraction": 0.0837,
+          "perThousand": 5.42
+        },
+        "CGT": {
+          "fraction": 0.2364,
+          "perThousand": 15.29
+        },
+        "CGC": {
+          "fraction": 0.2412,
+          "perThousand": 15.6
+        },
+        "CAG": {
+          "fraction": 0.5718,
+          "perThousand": 21.56
+        },
+        "CAA": {
+          "fraction": 0.4282,
+          "perThousand": 16.14
+        },
+        "CAT": {
+          "fraction": 0.3578,
+          "perThousand": 8.66
+        },
+        "CAC": {
+          "fraction": 0.6422,
+          "perThousand": 15.55
+        },
+        "CTG": {
+          "fraction": 0.2958,
+          "perThousand": 24.06
+        },
+        "CTA": {
+          "fraction": 0.0856,
+          "perThousand": 6.96
+        },
+        "CTT": {
+          "fraction": 0.1183,
+          "perThousand": 9.62
+        },
+        "CTC": {
+          "fraction": 0.2096,
+          "perThousand": 17.05
+        },
+        "CCG": {
+          "fraction": 0.159,
+          "perThousand": 7.84
+        },
+        "CCA": {
+          "fraction": 0.2767,
+          "perThousand": 13.64
+        },
+        "CCT": {
+          "fraction": 0.2856,
+          "perThousand": 14.08
+        },
+        "CCC": {
+          "fraction": 0.2788,
+          "perThousand": 13.75
+        }
+      }
+    },
+    {
+      "id": "d_melanogaster",
+      "name": "D. melanogaster",
+      "note": "S2 cells",
+      "taxid": 7227,
+      "source": "Drosophila melanogaster",
+      "cdsCount": 42417,
+      "codonCount": 21945319,
+      "codons": {
+        "GGG": {
+          "fraction": 0.0746,
+          "perThousand": 4.68
+        },
+        "GGA": {
+          "fraction": 0.2873,
+          "perThousand": 18.02
+        },
+        "GGT": {
+          "fraction": 0.2116,
+          "perThousand": 13.27
+        },
+        "GGC": {
+          "fraction": 0.4265,
+          "perThousand": 26.75
+        },
+        "GAG": {
+          "fraction": 0.6687,
+          "perThousand": 42.54
+        },
+        "GAA": {
+          "fraction": 0.3313,
+          "perThousand": 21.07
+        },
+        "GAT": {
+          "fraction": 0.5281,
+          "perThousand": 27.56
+        },
+        "GAC": {
+          "fraction": 0.4719,
+          "perThousand": 24.62
+        },
+        "GTG": {
+          "fraction": 0.4709,
+          "perThousand": 27.79
+        },
+        "GTA": {
+          "fraction": 0.1077,
+          "perThousand": 6.36
+        },
+        "GTT": {
+          "fraction": 0.1859,
+          "perThousand": 10.97
+        },
+        "GTC": {
+          "fraction": 0.2355,
+          "perThousand": 13.89
+        },
+        "GCG": {
+          "fraction": 0.1877,
+          "perThousand": 14.03
+        },
+        "GCA": {
+          "fraction": 0.1708,
+          "perThousand": 12.77
+        },
+        "GCT": {
+          "fraction": 0.1926,
+          "perThousand": 14.39
+        },
+        "GCC": {
+          "fraction": 0.4489,
+          "perThousand": 33.56
+        },
+        "AGG": {
+          "fraction": 0.1146,
+          "perThousand": 6.28
+        },
+        "AGA": {
+          "fraction": 0.0937,
+          "perThousand": 5.14
+        },
+        "AGT": {
+          "fraction": 0.1387,
+          "perThousand": 11.51
+        },
+        "AGC": {
+          "fraction": 0.2459,
+          "perThousand": 20.41
+        },
+        "AAG": {
+          "fraction": 0.6995,
+          "perThousand": 39.51
+        },
+        "AAA": {
+          "fraction": 0.3005,
+          "perThousand": 16.98
+        },
+        "AAT": {
+          "fraction": 0.4447,
+          "perThousand": 20.99
+        },
+        "AAC": {
+          "fraction": 0.5553,
+          "perThousand": 26.22
+        },
+        "ATG": {
+          "fraction": 1,
+          "perThousand": 23.61
+        },
+        "ATA": {
+          "fraction": 0.1938,
+          "perThousand": 9.49
+        },
+        "ATT": {
+          "fraction": 0.3383,
+          "perThousand": 16.56
+        },
+        "ATC": {
+          "fraction": 0.4679,
+          "perThousand": 22.91
+        },
+        "ACG": {
+          "fraction": 0.2557,
+          "perThousand": 14.38
+        },
+        "ACA": {
+          "fraction": 0.1961,
+          "perThousand": 11.02
+        },
+        "ACT": {
+          "fraction": 0.1693,
+          "perThousand": 9.52
+        },
+        "ACC": {
+          "fraction": 0.3789,
+          "perThousand": 21.3
+        },
+        "TGG": {
+          "fraction": 1,
+          "perThousand": 9.91
+        },
+        "TGA": {
+          "fraction": 0.2508,
+          "perThousand": 0.49
+        },
+        "TGT": {
+          "fraction": 0.2902,
+          "perThousand": 5.38
+        },
+        "TGC": {
+          "fraction": 0.7098,
+          "perThousand": 13.16
+        },
+        "TAG": {
+          "fraction": 0.3345,
+          "perThousand": 0.65
+        },
+        "TAA": {
+          "fraction": 0.4147,
+          "perThousand": 0.81
+        },
+        "TAT": {
+          "fraction": 0.3697,
+          "perThousand": 10.79
+        },
+        "TAC": {
+          "fraction": 0.6303,
+          "perThousand": 18.39
+        },
+        "TTG": {
+          "fraction": 0.1794,
+          "perThousand": 16.11
+        },
+        "TTA": {
+          "fraction": 0.0496,
+          "perThousand": 4.45
+        },
+        "TTT": {
+          "fraction": 0.3769,
+          "perThousand": 13.21
+        },
+        "TTC": {
+          "fraction": 0.6231,
+          "perThousand": 21.84
+        },
+        "TCG": {
+          "fraction": 0.2006,
+          "perThousand": 16.64
+        },
+        "TCA": {
+          "fraction": 0.0943,
+          "perThousand": 7.82
+        },
+        "TCT": {
+          "fraction": 0.0847,
+          "perThousand": 7.03
+        },
+        "TCC": {
+          "fraction": 0.2358,
+          "perThousand": 19.56
+        },
+        "CGG": {
+          "fraction": 0.1499,
+          "perThousand": 8.22
+        },
+        "CGA": {
+          "fraction": 0.1538,
+          "perThousand": 8.44
+        },
+        "CGT": {
+          "fraction": 0.1597,
+          "perThousand": 8.76
+        },
+        "CGC": {
+          "fraction": 0.3283,
+          "perThousand": 18
+        },
+        "CAG": {
+          "fraction": 0.6983,
+          "perThousand": 36.12
+        },
+        "CAA": {
+          "fraction": 0.3017,
+          "perThousand": 15.6
+        },
+        "CAT": {
+          "fraction": 0.3996,
+          "perThousand": 10.76
+        },
+        "CAC": {
+          "fraction": 0.6004,
+          "perThousand": 16.16
+        },
+        "CTG": {
+          "fraction": 0.4258,
+          "perThousand": 38.24
+        },
+        "CTA": {
+          "fraction": 0.0915,
+          "perThousand": 8.22
+        },
+        "CTT": {
+          "fraction": 0.0999,
+          "perThousand": 8.97
+        },
+        "CTC": {
+          "fraction": 0.1538,
+          "perThousand": 13.81
+        },
+        "CCG": {
+          "fraction": 0.2912,
+          "perThousand": 15.82
+        },
+        "CCA": {
+          "fraction": 0.2492,
+          "perThousand": 13.54
+        },
+        "CCT": {
+          "fraction": 0.1274,
+          "perThousand": 6.92
+        },
+        "CCC": {
+          "fraction": 0.3323,
+          "perThousand": 18.05
+        }
+      }
+    },
+    {
+      "id": "n_tabacum",
+      "name": "N. tabacum",
+      "note": "Plant transient expression",
+      "taxid": 4097,
+      "source": "Nicotiana tabacum",
+      "cdsCount": 1534,
+      "codonCount": 609684,
+      "codons": {
+        "GGG": {
+          "fraction": 0.1566,
+          "perThousand": 10.53
+        },
+        "GGA": {
+          "fraction": 0.3447,
+          "perThousand": 23.18
+        },
+        "GGT": {
+          "fraction": 0.3314,
+          "perThousand": 22.28
+        },
+        "GGC": {
+          "fraction": 0.1673,
+          "perThousand": 11.25
+        },
+        "GAG": {
+          "fraction": 0.45,
+          "perThousand": 29.43
+        },
+        "GAA": {
+          "fraction": 0.55,
+          "perThousand": 35.98
+        },
+        "GAT": {
+          "fraction": 0.6859,
+          "perThousand": 36.87
+        },
+        "GAC": {
+          "fraction": 0.3141,
+          "perThousand": 16.88
+        },
+        "GTG": {
+          "fraction": 0.2529,
+          "perThousand": 16.67
+        },
+        "GTA": {
+          "fraction": 0.1726,
+          "perThousand": 11.38
+        },
+        "GTT": {
+          "fraction": 0.4067,
+          "perThousand": 26.8
+        },
+        "GTC": {
+          "fraction": 0.1678,
+          "perThousand": 11.06
+        },
+        "GCG": {
+          "fraction": 0.0802,
+          "perThousand": 5.82
+        },
+        "GCA": {
+          "fraction": 0.3178,
+          "perThousand": 23.05
+        },
+        "GCT": {
+          "fraction": 0.4297,
+          "perThousand": 31.17
+        },
+        "GCC": {
+          "fraction": 0.1722,
+          "perThousand": 12.49
+        },
+        "AGG": {
+          "fraction": 0.2518,
+          "perThousand": 12.25
+        },
+        "AGA": {
+          "fraction": 0.3297,
+          "perThousand": 16.03
+        },
+        "AGT": {
+          "fraction": 0.1739,
+          "perThousand": 13.28
+        },
+        "AGC": {
+          "fraction": 0.1304,
+          "perThousand": 9.96
+        },
+        "AAG": {
+          "fraction": 0.5072,
+          "perThousand": 33.51
+        },
+        "AAA": {
+          "fraction": 0.4928,
+          "perThousand": 32.56
+        },
+        "AAT": {
+          "fraction": 0.6096,
+          "perThousand": 27.95
+        },
+        "AAC": {
+          "fraction": 0.3904,
+          "perThousand": 17.9
+        },
+        "ATG": {
+          "fraction": 1,
+          "perThousand": 25.01
+        },
+        "ATA": {
+          "fraction": 0.2511,
+          "perThousand": 13.96
+        },
+        "ATT": {
+          "fraction": 0.4997,
+          "perThousand": 27.78
+        },
+        "ATC": {
+          "fraction": 0.2492,
+          "perThousand": 13.85
+        },
+        "ACG": {
+          "fraction": 0.0871,
+          "perThousand": 4.53
+        },
+        "ACA": {
+          "fraction": 0.3355,
+          "perThousand": 17.44
+        },
+        "ACT": {
+          "fraction": 0.3912,
+          "perThousand": 20.34
+        },
+        "ACC": {
+          "fraction": 0.1862,
+          "perThousand": 9.68
+        },
+        "TGG": {
+          "fraction": 1,
+          "perThousand": 12.18
+        },
+        "TGA": {
+          "fraction": 0.3857,
+          "perThousand": 0.99
+        },
+        "TGT": {
+          "fraction": 0.577,
+          "perThousand": 9.79
+        },
+        "TGC": {
+          "fraction": 0.423,
+          "perThousand": 7.18
+        },
+        "TAG": {
+          "fraction": 0.1941,
+          "perThousand": 0.5
+        },
+        "TAA": {
+          "fraction": 0.4202,
+          "perThousand": 1.08
+        },
+        "TAT": {
+          "fraction": 0.5684,
+          "perThousand": 17.76
+        },
+        "TAC": {
+          "fraction": 0.4316,
+          "perThousand": 13.48
+        },
+        "TTG": {
+          "fraction": 0.2434,
+          "perThousand": 22.33
+        },
+        "TTA": {
+          "fraction": 0.1463,
+          "perThousand": 13.43
+        },
+        "TTT": {
+          "fraction": 0.5818,
+          "perThousand": 25.07
+        },
+        "TTC": {
+          "fraction": 0.4182,
+          "perThousand": 18.02
+        },
+        "TCG": {
+          "fraction": 0.0694,
+          "perThousand": 5.3
+        },
+        "TCA": {
+          "fraction": 0.2306,
+          "perThousand": 17.6
+        },
+        "TCT": {
+          "fraction": 0.2623,
+          "perThousand": 20.03
+        },
+        "TCC": {
+          "fraction": 0.1333,
+          "perThousand": 10.18
+        },
+        "CGG": {
+          "fraction": 0.0759,
+          "perThousand": 3.69
+        },
+        "CGA": {
+          "fraction": 0.1084,
+          "perThousand": 5.27
+        },
+        "CGT": {
+          "fraction": 0.1546,
+          "perThousand": 7.52
+        },
+        "CGC": {
+          "fraction": 0.0796,
+          "perThousand": 3.87
+        },
+        "CAG": {
+          "fraction": 0.4199,
+          "perThousand": 15.01
+        },
+        "CAA": {
+          "fraction": 0.5801,
+          "perThousand": 20.73
+        },
+        "CAT": {
+          "fraction": 0.6052,
+          "perThousand": 13.4
+        },
+        "CAC": {
+          "fraction": 0.3948,
+          "perThousand": 8.74
+        },
+        "CTG": {
+          "fraction": 0.1109,
+          "perThousand": 10.18
+        },
+        "CTA": {
+          "fraction": 0.1029,
+          "perThousand": 9.44
+        },
+        "CTT": {
+          "fraction": 0.262,
+          "perThousand": 24.04
+        },
+        "CTC": {
+          "fraction": 0.1345,
+          "perThousand": 12.34
+        },
+        "CCG": {
+          "fraction": 0.0993,
+          "perThousand": 4.97
+        },
+        "CCA": {
+          "fraction": 0.3968,
+          "perThousand": 19.85
+        },
+        "CCT": {
+          "fraction": 0.3729,
+          "perThousand": 18.65
+        },
+        "CCC": {
+          "fraction": 0.131,
+          "perThousand": 6.55
+        }
+      }
+    },
+    {
+      "id": "a_thaliana",
+      "name": "A. thaliana",
+      "note": "Plant model system",
+      "taxid": 3702,
+      "source": "Arabidopsis thaliana",
+      "cdsCount": 80395,
+      "codonCount": 31098475,
+      "codons": {
+        "GGG": {
+          "fraction": 0.155,
+          "perThousand": 10.18
+        },
+        "GGA": {
+          "fraction": 0.3679,
+          "perThousand": 24.16
+        },
+        "GGT": {
+          "fraction": 0.3377,
+          "perThousand": 22.18
+        },
+        "GGC": {
+          "fraction": 0.1394,
+          "perThousand": 9.15
+        },
+        "GAG": {
+          "fraction": 0.4842,
+          "perThousand": 32.24
+        },
+        "GAA": {
+          "fraction": 0.5158,
+          "perThousand": 34.34
+        },
+        "GAT": {
+          "fraction": 0.6803,
+          "perThousand": 36.65
+        },
+        "GAC": {
+          "fraction": 0.3197,
+          "perThousand": 17.22
+        },
+        "GTG": {
+          "fraction": 0.258,
+          "perThousand": 17.36
+        },
+        "GTA": {
+          "fraction": 0.1475,
+          "perThousand": 9.92
+        },
+        "GTT": {
+          "fraction": 0.4048,
+          "perThousand": 27.24
+        },
+        "GTC": {
+          "fraction": 0.1897,
+          "perThousand": 12.77
+        },
+        "GCG": {
+          "fraction": 0.1386,
+          "perThousand": 9.03
+        },
+        "GCA": {
+          "fraction": 0.2681,
+          "perThousand": 17.47
+        },
+        "GCT": {
+          "fraction": 0.4347,
+          "perThousand": 28.32
+        },
+        "GCC": {
+          "fraction": 0.1587,
+          "perThousand": 10.34
+        },
+        "AGG": {
+          "fraction": 0.2034,
+          "perThousand": 10.96
+        },
+        "AGA": {
+          "fraction": 0.3519,
+          "perThousand": 18.97
+        },
+        "AGT": {
+          "fraction": 0.1569,
+          "perThousand": 14.01
+        },
+        "AGC": {
+          "fraction": 0.1269,
+          "perThousand": 11.34
+        },
+        "AAG": {
+          "fraction": 0.5149,
+          "perThousand": 32.68
+        },
+        "AAA": {
+          "fraction": 0.4851,
+          "perThousand": 30.79
+        },
+        "AAT": {
+          "fraction": 0.5158,
+          "perThousand": 22.3
+        },
+        "AAC": {
+          "fraction": 0.4842,
+          "perThousand": 20.93
+        },
+        "ATG": {
+          "fraction": 1,
+          "perThousand": 24.53
+        },
+        "ATA": {
+          "fraction": 0.2395,
+          "perThousand": 12.6
+        },
+        "ATT": {
+          "fraction": 0.4084,
+          "perThousand": 21.49
+        },
+        "ATC": {
+          "fraction": 0.3522,
+          "perThousand": 18.53
+        },
+        "ACG": {
+          "fraction": 0.1509,
+          "perThousand": 7.74
+        },
+        "ACA": {
+          "fraction": 0.3056,
+          "perThousand": 15.67
+        },
+        "ACT": {
+          "fraction": 0.3417,
+          "perThousand": 17.52
+        },
+        "ACC": {
+          "fraction": 0.2017,
+          "perThousand": 10.34
+        },
+        "TGG": {
+          "fraction": 1,
+          "perThousand": 12.48
+        },
+        "TGA": {
+          "fraction": 0.4418,
+          "perThousand": 1.17
+        },
+        "TGT": {
+          "fraction": 0.5953,
+          "perThousand": 10.54
+        },
+        "TGC": {
+          "fraction": 0.4047,
+          "perThousand": 7.16
+        },
+        "TAG": {
+          "fraction": 0.2,
+          "perThousand": 0.53
+        },
+        "TAA": {
+          "fraction": 0.3582,
+          "perThousand": 0.95
+        },
+        "TAT": {
+          "fraction": 0.5158,
+          "perThousand": 14.63
+        },
+        "TAC": {
+          "fraction": 0.4842,
+          "perThousand": 13.73
+        },
+        "TTG": {
+          "fraction": 0.2233,
+          "perThousand": 20.87
+        },
+        "TTA": {
+          "fraction": 0.1358,
+          "perThousand": 12.7
+        },
+        "TTT": {
+          "fraction": 0.5136,
+          "perThousand": 21.81
+        },
+        "TTC": {
+          "fraction": 0.4864,
+          "perThousand": 20.66
+        },
+        "TCG": {
+          "fraction": 0.1044,
+          "perThousand": 9.33
+        },
+        "TCA": {
+          "fraction": 0.2047,
+          "perThousand": 18.28
+        },
+        "TCT": {
+          "fraction": 0.2818,
+          "perThousand": 25.17
+        },
+        "TCC": {
+          "fraction": 0.1253,
+          "perThousand": 11.2
+        },
+        "CGG": {
+          "fraction": 0.0904,
+          "perThousand": 4.87
+        },
+        "CGA": {
+          "fraction": 0.1168,
+          "perThousand": 6.29
+        },
+        "CGT": {
+          "fraction": 0.1673,
+          "perThousand": 9.02
+        },
+        "CGC": {
+          "fraction": 0.0701,
+          "perThousand": 3.78
+        },
+        "CAG": {
+          "fraction": 0.4393,
+          "perThousand": 15.24
+        },
+        "CAA": {
+          "fraction": 0.5607,
+          "perThousand": 19.45
+        },
+        "CAT": {
+          "fraction": 0.6126,
+          "perThousand": 13.79
+        },
+        "CAC": {
+          "fraction": 0.3874,
+          "perThousand": 8.72
+        },
+        "CTG": {
+          "fraction": 0.1052,
+          "perThousand": 9.83
+        },
+        "CTA": {
+          "fraction": 0.1056,
+          "perThousand": 9.87
+        },
+        "CTT": {
+          "fraction": 0.258,
+          "perThousand": 24.12
+        },
+        "CTC": {
+          "fraction": 0.1722,
+          "perThousand": 16.09
+        },
+        "CCG": {
+          "fraction": 0.1768,
+          "perThousand": 8.62
+        },
+        "CCA": {
+          "fraction": 0.3311,
+          "perThousand": 16.15
+        },
+        "CCT": {
+          "fraction": 0.3831,
+          "perThousand": 18.68
+        },
+        "CCC": {
+          "fraction": 0.109,
+          "perThousand": 5.31
+        }
+      }
+    }
+  ]
+}

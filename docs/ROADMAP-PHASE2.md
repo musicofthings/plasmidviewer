@@ -175,11 +175,30 @@ usage; FR-43–45 are comparatively niche and are reasonable candidates to defer
 ### Phase 2.4 — Analysis depth (Track B)
 `FR-46` ORF finding · `FR-47` Make Protein / Reverse Translate / reverse frames / fusion
 frame checking · `FR-48` Mutagenesis — primer-directed, silent (add/remove sites, on
-FR-34), codon optimisation by usage table · `FR-49` Agarose gel simulation with MW markers
+FR-34); **codon optimisation by usage table is shipped** (see below) ·
+`FR-49` Agarose gel simulation with MW markers
 (on FR-34 + FR-38) · `FR-50` Real pairwise alignment (Needleman–Wunsch / Smith–Waterman
 with affine gaps), replacing the Myers diff and answering
 [PRD open question 1](./PRD.md#9-open-questions) · `FR-51` Progressive MSA for DNA and
 protein, subject to §3.1.
+
+**Codon optimisation (part of FR-48), shipped.** Codon usage tables for eleven expression
+hosts, built from Kazusa CUTG by `scripts/build-codon-tables.mjs` and committed as
+`src/data/codonTables.json`. Three strategies — most-frequent, host-distribution-matched, and
+replace-rare-only — over a backtracking search that satisfies hard constraints: forbidden
+motifs on both strands (including sites that only exist across the junction with the vector),
+global and sliding-window GC bounds, homopolymer runs and direct repeats. Constraints it
+cannot satisfy are reported rather than silently broken, and the protein is asserted unchanged
+on every run.
+
+It ships *ahead* of the rest of FR-48 because it does not need the mutable document model:
+the result is offered as a FASTA download and as text to copy — a sequence to order, not an
+edit to the construct. Writing it back in place still waits on FR-31, and it is the obvious
+first customer for FR-33 once that lands.
+
+Deliberately not attempted: mRNA secondary-structure or 5'-end folding energy (that is FR-54's
+ViennaRNA), tRNA-adaptation-index weighting, and any learned model — see the CodonFM note in
+§8.
 
 ### Phase 2.5 — Breadth and polish
 `FR-52` Additional import formats (most are simple text formats; prioritise by user
@@ -236,3 +255,12 @@ Stated explicitly so the omissions are choices rather than oversights:
 5. Should correctness of simulated cloning be validated against SnapGene itself as a test
    oracle? [PRD §8](./PRD.md#8-success-metrics) already uses that approach for coordinates,
    and it would be the cheapest way to trust FR-40/41.
+6. **Learned codon models — separate project, not this one.** NVIDIA's CodonFM (Encodon) is a
+   masked language model over codon tokens; it scores sequences and predicts masked codons,
+   but ships no optimiser, and its published weights carry no species conditioning, which is
+   the whole question a codon optimiser answers. It is also 80M–1B parameters of PyTorch with
+   no hosted endpoint, so it cannot run in a no-backend browser app. If it is pursued it
+   belongs in its own service on NVIDIA cloud, with this app calling it — and the honest first
+   use is *scoring* (a per-codon likelihood heatmap over a CDS), which needs no mutable
+   document model either. The table-driven optimiser above is not a stopgap for it: it answers
+   a different, well-posed question, and it is the one a synthesis order actually needs.
