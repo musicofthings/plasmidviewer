@@ -19,6 +19,9 @@ coverage
 # Local agent/session state — machine-specific, not project content
 .claude/session/
 .claude/settings.local.json
+# Handover is a working note for whoever is at this machine, not project documentation.
+# Durable decisions belong in docs/ and CLAUDE.md, which are tracked.
+session_handover.md
 
 # Editor directories and files
 .vscode/*
